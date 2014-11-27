@@ -1,0 +1,19 @@
+module IdlFiles{
+		exception LibraryException{
+			long code;
+			string message;
+		};
+	interface LibraryManagementInterface{
+		void createAccount(in string firstName, in string lastName,
+			in string emailAddr, in string phoneNumber, in string userName,
+			in string password, in string institutionName) raises (LibraryException);
+		void reserveBook(in string userName, in string password, in string bookName,
+			in string authorName) raises (LibraryException);
+		void reserveInterLibrary(in string userName,in string password,
+			in string bookName, in string authorName) raises (LibraryException);
+		string getNonRetuners(in string adminUserName,in string adminPassword,
+			in string institutionName,in long days) raises (LibraryException);
+		void exit();
+		
+	};
+};

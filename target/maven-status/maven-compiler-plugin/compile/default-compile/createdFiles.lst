@@ -1,0 +1,6 @@
+com\assignment1\utils\FileOps.class
+com\assignment1\model\Account.class
+com\assignment1\model\StudentAccount.class
+com\assignment1\model\AdminAccount.class
+com\assignment1\config\Configuration.class
+com\assignment1\implementations\ServerImpl.class
