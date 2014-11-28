@@ -19,6 +19,7 @@ import javax.xml.ws.Endpoint;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.assignment1.abstractclass.CommunicationFacilitator;
 import com.assignment1.config.Configuration;
 import com.assignment1.exception.LibraryException;
 import com.assignment1.model.Book;
@@ -35,7 +36,7 @@ import com.assignment1.utils.UDPManager;
  * 
  */
 @WebService(endpointInterface="com.assignment1.remoteinterface.LibraryManagementInterface",targetNamespace = "http://libraryServer/ws")
-public class LibraryServer implements LibraryManagementInterface {
+public class LibraryServer extends CommunicationFacilitator implements LibraryManagementInterface {
 	private HashMap<String, Book> bookMap = null;
 	private HashMap<Character, HashMap<String, StudentAccount>> accounts = null;
 	private String name;
