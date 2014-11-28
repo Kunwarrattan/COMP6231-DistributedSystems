@@ -34,7 +34,7 @@ public class Configuration {
 	public static final int BOOK_NOT_FOUND = 0;
 	public static final int DEFAULT_EXCEPTION_CODE = -1;
 	public static final String HOSTNAME = "http://localhost:8080/";
-	public static final String COMMUNICATION_SEPERATOR = "*";
+	public static final String COMMUNICATION_SEPERATOR = "~";
 	public static final int MAX_PACKET_SIZE = 65508;
 	public static final int MAX_NO_OF_TRIES = 5;
 	public static final int MAX_MILLISECONDS_FOR_PERIODIC_JOB = 5;
