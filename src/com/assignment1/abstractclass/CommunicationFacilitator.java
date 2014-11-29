@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public abstract class CommunicationFacilitator {
-	public TreeMap<Integer, String> sortedQueue;
+	public TreeMap<Integer, String> sortedQueue = new TreeMap<Integer, String>();
 	
 	public void pushToQueue(Integer key, String val){
 		synchronized(sortedQueue){
