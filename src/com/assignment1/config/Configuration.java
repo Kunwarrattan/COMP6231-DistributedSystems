@@ -42,4 +42,6 @@ public class Configuration {
 	public static final String ACK_STRING = "ACK";
 	public static final String TIMESTAMP_SEPERATOR = "@";
 	public static final int QUEUE_SIZE = 100;
+	public static final String PROCEED_STRING = "SUCCESS";
+	public static final int RECV_TIMEOUT = 900;
 }
