@@ -16,9 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedInputStream;
-
 import org.apache.commons.lang3.StringUtils;
-
 import com.assignment1.abstractclass.CommunicationFacilitator;
 import com.assignment1.config.Configuration;
 import com.assignment1.exception.CommunicationException;
@@ -76,6 +74,8 @@ public class CommunicationManager extends Thread {
 
 	private void init() throws SocketException {
 		recievingSocket = new DatagramSocket(receivingPort);
+		sendingSocket = new DatagramSocket();
+		sendingSocket.setSoTimeout(Configuration.RECV_TIMEOUT);
 	}
 
 	public void exit() {

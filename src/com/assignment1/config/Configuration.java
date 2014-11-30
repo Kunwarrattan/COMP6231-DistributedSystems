@@ -49,4 +49,13 @@ public class Configuration {
 	public static final String MULTICAST_ADDR = "224.0.1.20";
 	public static final int MULTICAST_PORT = 64;
 	public static final int SEQUENCER_RECV_PORT = 6000;
+	public static final int RECIEVING_PORT1 = 7000;
+	public static final int RECIEVING_PORT2 = 7001;
+	public static final int RECIEVING_PORT3 = 7002;
+	public static final String CREATE_ACCOUNT = "CREATE_ACCT";
+	public static final String RESERVE_BOOK = "RESERVE_BOOK";
+	public static final String RESERVE_INTER_LIBRARY = "RESERVE_INTER_LIB";
+	public static final String GET_NON_RETUNERS = "GET_NON_RETUNERS";
+	public static final String SUCCESS_STRING = "1";
+	public static final String FAILURE_STRING = "0";
 }

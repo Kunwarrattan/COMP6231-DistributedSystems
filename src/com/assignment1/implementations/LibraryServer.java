@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import javax.jws.WebService;
 import javax.xml.ws.Endpoint;
@@ -21,22 +23,26 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.assignment1.abstractclass.CommunicationFacilitator;
 import com.assignment1.config.Configuration;
+import com.assignment1.exception.CommunicationException;
 import com.assignment1.exception.LibraryException;
 import com.assignment1.model.Book;
 import com.assignment1.model.StudentAccount;
 import com.assignment1.remoteinterface.LibraryManagementInterface;
+import com.assignment1.utils.CommunicationManager;
 import com.assignment1.utils.FileOps;
 import com.assignment1.utils.UDPManager;
 
 /**
  * This class represents the library server and holds all the information
- * regarding the users and books available in this library 
+ * regarding the users and books available in this library
  * 
  * @author Kaushik
  * 
  */
-@WebService(endpointInterface="com.assignment1.remoteinterface.LibraryManagementInterface",targetNamespace = "http://libraryServer/ws")
-public class LibraryServer extends CommunicationFacilitator implements LibraryManagementInterface {
+@WebService(endpointInterface = "com.assignment1.remoteinterface.LibraryManagementInterface", targetNamespace = "http://libraryServer/ws")
+public class LibraryServer extends CommunicationFacilitator implements
+		LibraryManagementInterface, Runnable {
+
 	private HashMap<String, Book> bookMap = null;
 	private HashMap<Character, HashMap<String, StudentAccount>> accounts = null;
 	private String name;
@@ -45,8 +51,13 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 	private LinkedHashMap<String, StudentAccount> accountsCopy = new LinkedHashMap<String, StudentAccount>();
 	private int portForGetNonReturners = 0;
 	private int portForInterLibraryCommunication = 0;
-	private boolean stopServer = true;
 	private UDPManager udpMgr = null;
+
+	/**
+	 * CODE start
+	 */
+	private CommunicationManager mgrone;
+	public volatile boolean stopServer = true;
 
 	/**
 	 * Object initialization..
@@ -105,9 +116,16 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 			accountsCopy.putAll(iter.next());
 		}
 		udpMgr = new UDPManager(this, true);
-		/*
-		 * thread = new Thread(this); thread.start();
-		 */}
+		if (name.equals(Configuration.LIBRARY1))
+			mgrone = new CommunicationManager(Configuration.RECIEVING_PORT1,
+					this);
+		else if (name.equals(Configuration.LIBRARY2))
+			mgrone = new CommunicationManager(Configuration.RECIEVING_PORT2,
+					this);
+		else if (name.equals(Configuration.LIBRARY3))
+			mgrone = new CommunicationManager(Configuration.RECIEVING_PORT3,
+					this);
+	}
 
 	/**
 	 * Add the default set of keys to accounts map..
@@ -567,9 +585,8 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 					new StringBuilder(
 							userName
 									+ ": reserveBook : Successfully reserved the book from interlibrary transfer with name "
-									+ bookName
-									+ " by Authour : "
-									+ authorName + " for "
+									+ bookName + " by Authour : " + authorName
+									+ " for "
 									+ Configuration.DEFAULT_NO_OF_DAYS
 									+ " days.."));
 		}
@@ -711,45 +728,47 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 					0, Configuration.UDP_PORT_2);
 			LibraryServer server3 = new LibraryServer(Configuration.LIBRARY3,
 					0, Configuration.UDP_PORT_3);
-			server1.setDuration("kaushik", "3D Math", Configuration.DEFAULT_NO_OF_DAYS+4);
-			server1.setDuration("charlie", "3D Math", Configuration.DEFAULT_NO_OF_DAYS+6);
+			server1.setDuration("kaushik", "3D Math",
+					Configuration.DEFAULT_NO_OF_DAYS + 4);
+			server1.setDuration("charlie", "3D Math",
+					Configuration.DEFAULT_NO_OF_DAYS + 6);
 			server1.loadBooks();
 			server2.loadBooks();
 			server3.loadBooks();
-			Endpoint.publish(Configuration.HOSTNAME+server1.name, server1);
-			Endpoint.publish(Configuration.HOSTNAME+server2.name, server2);
-			Endpoint.publish(Configuration.HOSTNAME+server3.name, server3);
-/*			Registry r = LocateRegistry.createRegistry(Configuration.PORT);
-			ORB orb = ORB.init(args, null);
-			POA rootPoa = POAHelper.narrow(orb
-					.resolve_initial_references("RootPOA"));
-			LibraryServer server1 = new LibraryServer(Configuration.LIBRARY1,
-					0, Configuration.UDP_PORT_1);
-			LibraryServer server2 = new LibraryServer(Configuration.LIBRARY2,
-					0, Configuration.UDP_PORT_2);
-			LibraryServer server3 = new LibraryServer(Configuration.LIBRARY3,
-					0, Configuration.UDP_PORT_3);
-			byte[] id1 = rootPoa.activate_object(server1);
-			byte[] id2 = rootPoa.activate_object(server2);
-			byte[] id3 = rootPoa.activate_object(server3);
-			server1.setDuration("kau1990", "3D Math", Configuration.DEFAULT_NO_OF_DAYS+4);
-			server2.setDuration("harvey1990", "3D Math", Configuration.DEFAULT_NO_OF_DAYS+10);
-			server1.setDuration("kun1990", "3D Math", Configuration.DEFAULT_NO_OF_DAYS+2);
-			org.omg.CORBA.Object obj = rootPoa.id_to_reference(id1);
-			org.omg.CORBA.Object obj1 = rootPoa.id_to_reference(id2);
-			org.omg.CORBA.Object obj2 = rootPoa.id_to_reference(id3);
-			String str1 = orb.object_to_string(obj);
-			String str2 = orb.object_to_string(obj1);
-			String str3 = orb.object_to_string(obj2);
-			FileUtils.writeStringToFile(new File(".//" + Configuration.LIBRARY1
-					+ "IOR.txt"), str1);
-			FileUtils.writeStringToFile(new File(".//" + Configuration.LIBRARY2
-					+ "IOR.txt"), str2);
-			FileUtils.writeStringToFile(new File(".//" + Configuration.LIBRARY3
-					+ "IOR.txt"), str3);
-			rootPoa.the_POAManager().activate();
-			orb.run();
-*/
+			Endpoint.publish(Configuration.HOSTNAME + server1.name, server1);
+			Endpoint.publish(Configuration.HOSTNAME + server2.name, server2);
+			Endpoint.publish(Configuration.HOSTNAME + server3.name, server3);
+			/*
+			 * Registry r = LocateRegistry.createRegistry(Configuration.PORT);
+			 * ORB orb = ORB.init(args, null); POA rootPoa =
+			 * POAHelper.narrow(orb .resolve_initial_references("RootPOA"));
+			 * LibraryServer server1 = new LibraryServer(Configuration.LIBRARY1,
+			 * 0, Configuration.UDP_PORT_1); LibraryServer server2 = new
+			 * LibraryServer(Configuration.LIBRARY2, 0,
+			 * Configuration.UDP_PORT_2); LibraryServer server3 = new
+			 * LibraryServer(Configuration.LIBRARY3, 0,
+			 * Configuration.UDP_PORT_3); byte[] id1 =
+			 * rootPoa.activate_object(server1); byte[] id2 =
+			 * rootPoa.activate_object(server2); byte[] id3 =
+			 * rootPoa.activate_object(server3); server1.setDuration("kau1990",
+			 * "3D Math", Configuration.DEFAULT_NO_OF_DAYS+4);
+			 * server2.setDuration("harvey1990", "3D Math",
+			 * Configuration.DEFAULT_NO_OF_DAYS+10);
+			 * server1.setDuration("kun1990", "3D Math",
+			 * Configuration.DEFAULT_NO_OF_DAYS+2); org.omg.CORBA.Object obj =
+			 * rootPoa.id_to_reference(id1); org.omg.CORBA.Object obj1 =
+			 * rootPoa.id_to_reference(id2); org.omg.CORBA.Object obj2 =
+			 * rootPoa.id_to_reference(id3); String str1 =
+			 * orb.object_to_string(obj); String str2 =
+			 * orb.object_to_string(obj1); String str3 =
+			 * orb.object_to_string(obj2); FileUtils.writeStringToFile(new
+			 * File(".//" + Configuration.LIBRARY1 + "IOR.txt"), str1);
+			 * FileUtils.writeStringToFile(new File(".//" +
+			 * Configuration.LIBRARY2 + "IOR.txt"), str2);
+			 * FileUtils.writeStringToFile(new File(".//" +
+			 * Configuration.LIBRARY3 + "IOR.txt"), str3);
+			 * rootPoa.the_POAManager().activate(); orb.run();
+			 */
 			/*
 			 * LibraryServer server1 = new LibraryServer(Configuration.LIBRARY1,
 			 * Configuration.UDP_PORT_1); LibraryServer server2 = new
@@ -842,4 +861,86 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 	public void setPortForGetNonReturners(int portForGetNonReturners) {
 		this.portForGetNonReturners = portForGetNonReturners;
 	}
+
+	// CODE
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		while (stopServer) {
+			String data = this.popFirstVal();
+			if (data != null) {
+				String[] arry;
+				arry = data.split(Configuration.COMMUNICATION_SEPERATOR);
+				String timestamp = arry[0];
+				String request = arry[1];
+				String hostname = arry[2];
+				int port = Integer.parseInt(arry[3]);
+				String response = timestamp + Configuration.UDP_DELIMITER
+						+ Configuration.SUCCESS_STRING;
+				if (request.contains(Configuration.CREATE_ACCOUNT)) {
+					String requestParam[] = request
+							.split(Configuration.UDP_DELIMITER);
+					int i = 0;
+					try {
+						createAccount(requestParam[++i], requestParam[++i],
+								requestParam[++i], requestParam[++i],
+								requestParam[++i], requestParam[++i],
+								requestParam[++i]);
+					} catch (LibraryException e) {
+						response = timestamp + Configuration.UDP_DELIMITER
+								+ Configuration.FAILURE_STRING;
+					}
+
+				} else if (request.contains(Configuration.RESERVE_BOOK)) {
+					String requestParam[] = request
+							.split(Configuration.UDP_DELIMITER);
+					int i = 0;
+					try {
+						reserveBook(requestParam[++i], requestParam[++i],
+								requestParam[++i], requestParam[++i]);
+
+					} catch (LibraryException e) {
+						response = timestamp + Configuration.UDP_DELIMITER
+								+ Configuration.FAILURE_STRING;
+					}
+				} else if (request
+						.contains(Configuration.RESERVE_INTER_LIBRARY)) {
+					String requestParam[] = request
+							.split(Configuration.UDP_DELIMITER);
+					int i = 0;
+					try {
+						reserveInterLibrary(requestParam[++i],
+								requestParam[++i], requestParam[++i],
+								requestParam[++i]);
+					} catch (LibraryException e) {
+						response = timestamp + Configuration.UDP_DELIMITER
+								+ Configuration.FAILURE_STRING;
+					}
+				} else if (request.contains(Configuration.GET_NON_RETUNERS)) {
+					String requestParam[] = request
+							.split(Configuration.UDP_DELIMITER);
+					int i = 0;
+					try {
+						response += Configuration.UDP_DELIMITER
+								+ getNonRetuners(requestParam[++i],
+										requestParam[++i], requestParam[++i],
+										++i);
+					} catch (LibraryException e) {
+						response = timestamp + Configuration.UDP_DELIMITER
+								+ Configuration.FAILURE_STRING;
+					}
+				}
+				try {
+					mgrone.send(response, hostname, port);
+				} catch (CommunicationException | IOException
+						| InterruptedException | ExecutionException
+						| TimeoutException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		// mgrone.exit();
+	}
+	// CODE
 }
