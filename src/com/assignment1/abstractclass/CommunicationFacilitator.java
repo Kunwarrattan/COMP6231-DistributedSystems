@@ -4,9 +4,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public abstract class CommunicationFacilitator {
-	public TreeMap<Integer, String> sortedQueue = new TreeMap<Integer, String>();
+	public TreeMap<String, String> sortedQueue = new TreeMap<String, String>();
 	
-	public void pushToQueue(Integer key, String val){
+	public void pushToQueue(String key, String val){
 		synchronized(sortedQueue){
 			sortedQueue.put(key, val);
 		}
@@ -14,7 +14,7 @@ public abstract class CommunicationFacilitator {
 	
 	public String popFirstVal(){
 		synchronized (sortedQueue) {
-			Map.Entry<Integer,String> e = sortedQueue.pollFirstEntry();
+			Map.Entry<String,String> e = sortedQueue.pollFirstEntry();
 			if(e != null){
 				return e.getValue();
 			}

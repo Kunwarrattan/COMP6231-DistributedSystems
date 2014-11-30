@@ -44,4 +44,9 @@ public class Configuration {
 	public static final int QUEUE_SIZE = 100;
 	public static final String PROCEED_STRING = "SUCCESS";
 	public static final int RECV_TIMEOUT = 900;
+	public static final String SENDER_ROLE = "SENDER";
+	public static final String RECIEVER_ROLE = "RECIEVER";
+	public static final String MULTICAST_ADDR = "224.0.1.20";
+	public static final int MULTICAST_PORT = 64;
+	public static final int SEQUENCER_RECV_PORT = 6000;
 }

@@ -9,6 +9,7 @@ import java.util.Date;
 public class Test {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		Sender s = new Sender(64);
+		System.out.println(InetAddress.getByName(InetAddress.getLocalHost().getCanonicalHostName()).getHostName());
 		ThreadManager r = new ThreadManager();
 		ThreadManager r1 = new ThreadManager();
 		r.start();
@@ -29,8 +30,8 @@ public class Test {
 	}
 }
 class ThreadManager extends Thread{
-	public boolean val = false;
-	public boolean val1  = false;
+	public volatile boolean val = false;
+	public volatile boolean val1  = false;
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
@@ -77,6 +78,7 @@ class Reciever{
 		s.receive(packet);
 		byte recv[] = new byte[65508];
 		System.arraycopy(packet.getData(), 0, recv, 0, packet.getData().length);
+		System.out.println(packet.getAddress().getHostName());
 		//System.out.println(new String(recv));
 		System.out.println(new String(recv).trim() + "Date : "+ new Date() + "length :" +new String(recv).trim().length());
 		s.leaveGroup(InetAddress.getByName("224.0.1.20"));
