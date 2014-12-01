@@ -162,7 +162,7 @@ public class Sequencer extends CommunicationFacilitator {
 						}
 						set.add(response);
 						responseMap.put(responseArry[0], set);
-						if (responseMap.size() == replicas.size()) {
+						if (set.size() == replicas.size()) {
 							notifyAll = true;
 						}
 					}
