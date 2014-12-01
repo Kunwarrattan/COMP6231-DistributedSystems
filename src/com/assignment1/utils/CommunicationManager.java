@@ -89,7 +89,7 @@ public class CommunicationManager extends Thread {
 		}
 	}
 
-	public String send(String data, String hostName, int clientPort)
+	public synchronized String send(String data, String hostName, int clientPort)
 			throws CommunicationException, IOException, InterruptedException,
 			ExecutionException, TimeoutException {
 		result = false;

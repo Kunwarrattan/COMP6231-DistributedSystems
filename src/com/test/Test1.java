@@ -1,15 +1,21 @@
 package com.test;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import com.assignment1.config.Configuration;
+import com.sun.org.apache.xml.internal.serializer.ToSAXHandler;
 
 public class Test1 extends Thread{
 	private Object monitor = new Object();
 	private List<String> x = new LinkedList<String>();
+	public String toString(){
+		return x.toString();
+	}
 	public Test1(){
-		new Thread(new Runnable() {
+/*		new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -17,8 +23,8 @@ public class Test1 extends Thread{
 				Thread.currentThread().setName("GET Val 2");
 				getVal();
 			}
-		}).start();
-		this.start();
+		}).start();*/
+		//this.start();
 	}
 	public void getVal(){
 		boolean loopCondition = true;
@@ -59,9 +65,18 @@ public class Test1 extends Thread{
 		}
 	}
 	public static void main(String[] args) {
-		System.out.println(new Boolean("true") == false);
+		HashMap<String, Integer> i = new HashMap<>();
+		i.put("x", new Integer(1));
+		i.put("y", new Integer(11));
+		for(Map.Entry<String, Integer> entry : i.entrySet()){
+			Integer u = entry.getValue();
+			u++;
+			i.put(entry.getKey(), u);
+		}
+		System.out.println(i);
+	/*	System.out.println(new Boolean("true") == false);
 		Test1 t = new Test1();
 		Thread.currentThread().setName("Main");
-		t.getVal();
+		t.getVal();*/
 	}
 }

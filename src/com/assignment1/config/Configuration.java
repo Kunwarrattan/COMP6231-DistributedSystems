@@ -61,4 +61,16 @@ public class Configuration {
 	public static final String REPLICA1 = "REPLICA1";
 	public static final String REPLICA2 = "REPLICA2";
 	public static final String REPLICA3 = "REPLICA3";
+	public static final int REPLICA_INTERFACE_PORT1 = 5000;
+	public static final int REPLICA_INTERFACE_PORT2 = 5001;
+	public static final int REPLICA_INTERFACE_PORT3 = 5002;
+	public static final String REPLICA_START_CMD = "START";
+	public static final String REPLICA_SHUT_DOWN_CMD = "STOP";
+	public static final int RM_RECV_PORT = 5003;
+	public static String REPLICA_IP1 = "";
+	public static String REPLICA_IP2 = "";
+	public static String REPLICA_IP3 = "";
+	public static final String REPLICA_HEARTBEAT = "MY_HEARTBEAT";
+	public static final String HEART_BEAT_MONITOR = "HEART_BEAT_MONITOR";
+	public static final String RCV_MONITOR = "RCV_MONITOR";
 }

@@ -147,20 +147,21 @@ public class LibraryServer extends CommunicationFacilitator implements
 	 * 
 	 */
 	public void exit() {
-		String bookInfoFile = Configuration.CURRENT_DIR + name + "//"
-				+ Configuration.BOOK_MAP_SERIALIZED_FILE;
-		String acctInfoFile = Configuration.CURRENT_DIR + name + "//"
-				+ Configuration.USER_ACCT_MAP_SERIALIZED_FILE;
-		try {
-			synchronized (accounts) {
-				FileOps.serializeObjToFile(acctInfoFile, accounts);
-			}
-			synchronized (bookMap) {
-				FileOps.serializeObjToFile(bookInfoFile, bookMap);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		this.mgrone.exit();
+//		String bookInfoFile = Configuration.CURRENT_DIR + name + "//"
+//				+ Configuration.BOOK_MAP_SERIALIZED_FILE;
+//		String acctInfoFile = Configuration.CURRENT_DIR + name + "//"
+//				+ Configuration.USER_ACCT_MAP_SERIALIZED_FILE;
+//		try {
+//			synchronized (accounts) {
+//				FileOps.serializeObjToFile(acctInfoFile, accounts);
+//			}
+//			synchronized (bookMap) {
+//				FileOps.serializeObjToFile(bookInfoFile, bookMap);
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	/**

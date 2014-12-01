@@ -1,6 +1,7 @@
 package com.test;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 import com.assignment1.abstractclass.CommunicationFacilitator;
 import com.assignment1.config.Configuration;
@@ -19,6 +20,7 @@ public class CommunicationManagerTest {
 	}*/
 	public static void main(String args[]) throws IOException, CommunicationException{
 		Server server = new Server();
+		System.out.println(InetAddress.getLocalHost().getCanonicalHostName());
 		CommunicationManager mgr = new CommunicationManager(Configuration.MULTICAST_PORT,Configuration.SENDER_ROLE,server);
 		mgr.sendMulticast("kaushik is badass!!");
 		
