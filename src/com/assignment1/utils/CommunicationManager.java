@@ -16,13 +16,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedInputStream;
+
 import org.apache.commons.lang3.StringUtils;
+
 import com.assignment1.abstractclass.CommunicationFacilitator;
 import com.assignment1.config.Configuration;
 import com.assignment1.exception.CommunicationException;
 
 public class CommunicationManager extends Thread {
-	// Queue..
 	private CommunicationFacilitator facilitator;
 	private int receivingPort;
 	private DatagramSocket sendingSocket;
@@ -88,12 +89,12 @@ public class CommunicationManager extends Thread {
 		}
 	}
 
-	public void send(String data, String hostName, int clientPort)
+	public String send(String data, String hostName, int clientPort)
 			throws CommunicationException, IOException, InterruptedException,
 			ExecutionException, TimeoutException {
 		result = false;
 		int i = 0;
-		final String timeStamp = SequenceGenerator.getTimeStamp();
+		final String timeStamp = this.facilitator.getUniqueTimeStamp();
 		for (i = 0; i < Configuration.MAX_NO_OF_TRIES && result == false; i++) {
 			String tempData = timeStamp + Configuration.COMMUNICATION_SEPERATOR
 					+ data;
@@ -190,10 +191,12 @@ public class CommunicationManager extends Thread {
 		}
 		if (result) {
 			System.out.println("Successfully sent,.");
+			return timeStamp;
 		}
 		if (i >= Configuration.MAX_NO_OF_TRIES) {
 			throw new CommunicationException("Deliver of packet failed..");
 		}
+		return null;
 	}
 
 	private String getCheckSum(String data) throws IOException {
@@ -260,7 +263,6 @@ public class CommunicationManager extends Thread {
 				}
 			}
 			catch (SocketException e) {
-				// TODO: handle exception
 				System.out.println("Closed..");
 			}
 			catch (IOException e) {
@@ -315,9 +317,9 @@ public class CommunicationManager extends Thread {
 		return false;
 	}
 
-	public void sendMulticast(String data) throws IOException,
+	public String sendMulticast(String data) throws IOException,
 			CommunicationException {
-		String timeStamp = SequenceGenerator.getTimeStamp();
+		String timeStamp = this.facilitator.getUniqueTimeStamp();
 		String tempData = timeStamp + Configuration.COMMUNICATION_SEPERATOR
 				+ data;
 		String checkSum = getCheckSum(tempData);
@@ -334,6 +336,7 @@ public class CommunicationManager extends Thread {
 				InetAddress.getByName(Configuration.MULTICAST_ADDR),
 				multicastSender.getLocalPort());
 		multicastSender.send(sendPacket);
+		return timeStamp;
 	}
 
 	private void multicastRecv() throws IOException {
@@ -371,12 +374,10 @@ public class CommunicationManager extends Thread {
 
 				@Override
 				public void run() {
-					// TODO Auto-generated method stub
 					try {
 						recv();
 					} catch (CommunicationException | InterruptedException
 							| ExecutionException | TimeoutException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -388,11 +389,9 @@ public class CommunicationManager extends Thread {
 
 				@Override
 				public void run() {
-					// TODO Auto-generated method stub
 					try {
 						multicastRecv();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

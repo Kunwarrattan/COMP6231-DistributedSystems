@@ -56,6 +56,9 @@ public class Configuration {
 	public static final String RESERVE_BOOK = "RESERVE_BOOK";
 	public static final String RESERVE_INTER_LIBRARY = "RESERVE_INTER_LIB";
 	public static final String GET_NON_RETUNERS = "GET_NON_RETUNERS";
-	public static final String SUCCESS_STRING = "1";
-	public static final String FAILURE_STRING = "0";
+	public static final String SUCCESS_STRING = "true";
+	public static final String FAILURE_STRING = "false";
+	public static final String REPLICA1 = "REPLICA1";
+	public static final String REPLICA2 = "REPLICA2";
+	public static final String REPLICA3 = "REPLICA3";
 }

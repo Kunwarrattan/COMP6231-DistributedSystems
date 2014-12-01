@@ -52,6 +52,7 @@ public class LibraryServer extends CommunicationFacilitator implements
 	private int portForGetNonReturners = 0;
 	private int portForInterLibraryCommunication = 0;
 	private UDPManager udpMgr = null;
+	private String replicaName = null;
 
 	/**
 	 * CODE start
@@ -68,9 +69,10 @@ public class LibraryServer extends CommunicationFacilitator implements
 	 * @throws Exception
 	 */
 	public LibraryServer(String name, int portForGetNonReturners,
-			int portForInterLibraryCommunication) throws Exception {
+			int portForInterLibraryCommunication,String replicaName) throws Exception {
 		super();
 		this.name = name;
+		this.replicaName = replicaName;
 		// this.portForGetNonReturners = portForGetNonReturners;
 		this.portForInterLibraryCommunication = portForInterLibraryCommunication;
 		FileOps.initServer(name);
@@ -723,11 +725,11 @@ public class LibraryServer extends CommunicationFacilitator implements
 	public static void main(String[] args) throws Exception {
 		try {
 			LibraryServer server1 = new LibraryServer(Configuration.LIBRARY1,
-					0, Configuration.UDP_PORT_1);
+					0, Configuration.UDP_PORT_1,Configuration.REPLICA1);
 			LibraryServer server2 = new LibraryServer(Configuration.LIBRARY2,
-					0, Configuration.UDP_PORT_2);
+					0, Configuration.UDP_PORT_2,Configuration.REPLICA1);
 			LibraryServer server3 = new LibraryServer(Configuration.LIBRARY3,
-					0, Configuration.UDP_PORT_3);
+					0, Configuration.UDP_PORT_3,Configuration.REPLICA1);
 			server1.setDuration("kaushik", "3D Math",
 					Configuration.DEFAULT_NO_OF_DAYS + 4);
 			server1.setDuration("charlie", "3D Math",
@@ -875,8 +877,10 @@ public class LibraryServer extends CommunicationFacilitator implements
 				String request = arry[1];
 				String hostname = arry[2];
 				int port = Integer.parseInt(arry[3]);
-				String response = timestamp + Configuration.UDP_DELIMITER
+				String response = timestamp + Configuration.UDP_DELIMITER + this.replicaName+Configuration.UDP_DELIMITER
 						+ Configuration.SUCCESS_STRING;
+				String failureResponse = timestamp + Configuration.UDP_DELIMITER + this.replicaName+ Configuration.UDP_DELIMITER
+						+ Configuration.FAILURE_STRING;
 				if (request.contains(Configuration.CREATE_ACCOUNT)) {
 					String requestParam[] = request
 							.split(Configuration.UDP_DELIMITER);
@@ -887,8 +891,7 @@ public class LibraryServer extends CommunicationFacilitator implements
 								requestParam[++i], requestParam[++i],
 								requestParam[++i]);
 					} catch (LibraryException e) {
-						response = timestamp + Configuration.UDP_DELIMITER
-								+ Configuration.FAILURE_STRING;
+						response = failureResponse;
 					}
 
 				} else if (request.contains(Configuration.RESERVE_BOOK)) {
@@ -900,8 +903,7 @@ public class LibraryServer extends CommunicationFacilitator implements
 								requestParam[++i], requestParam[++i]);
 
 					} catch (LibraryException e) {
-						response = timestamp + Configuration.UDP_DELIMITER
-								+ Configuration.FAILURE_STRING;
+						response =failureResponse;
 					}
 				} else if (request
 						.contains(Configuration.RESERVE_INTER_LIBRARY)) {
@@ -913,8 +915,7 @@ public class LibraryServer extends CommunicationFacilitator implements
 								requestParam[++i], requestParam[++i],
 								requestParam[++i]);
 					} catch (LibraryException e) {
-						response = timestamp + Configuration.UDP_DELIMITER
-								+ Configuration.FAILURE_STRING;
+						response = failureResponse;
 					}
 				} else if (request.contains(Configuration.GET_NON_RETUNERS)) {
 					String requestParam[] = request
@@ -924,10 +925,9 @@ public class LibraryServer extends CommunicationFacilitator implements
 						response += Configuration.UDP_DELIMITER
 								+ getNonRetuners(requestParam[++i],
 										requestParam[++i], requestParam[++i],
-										++i);
+										Integer.parseInt(requestParam[++i]));
 					} catch (LibraryException e) {
-						response = timestamp + Configuration.UDP_DELIMITER
-								+ Configuration.FAILURE_STRING;
+						response = failureResponse;
 					}
 				}
 				try {
