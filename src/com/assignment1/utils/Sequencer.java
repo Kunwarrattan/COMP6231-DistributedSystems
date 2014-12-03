@@ -22,7 +22,7 @@ public class Sequencer extends CommunicationFacilitator {
 				this);
 	}
 
-	public HashMap<String,Boolean> createAccount(String firstName, String lastName,
+	public void createAccount(String firstName, String lastName,
 			String emailAddr, String phoneNumber, String userName,
 			String password, String institutionName) throws IOException,
 			CommunicationException {
@@ -46,7 +46,6 @@ public class Sequencer extends CommunicationFacilitator {
 				responseMap.put(replyArry[1], Boolean.valueOf(replyArry[2]));
 			}
 		}
-		return responseMap;
 	}
 	
 	public HashMap<String,Boolean> reserveBook(String userName, String password, String bookName,

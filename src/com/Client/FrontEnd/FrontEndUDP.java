@@ -136,8 +136,8 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 	}
 
 	@Override
-	public void exit() throws LibraryException {
-
+	public void exit() {
+		
 	}
 
 	@Override

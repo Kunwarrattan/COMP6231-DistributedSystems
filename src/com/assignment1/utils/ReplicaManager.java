@@ -101,8 +101,14 @@ public class ReplicaManager extends CommunicationFacilitator implements
 		String ary[] = notification.split(Configuration.UDP_DELIMITER);
 		synchronized (numberOfTimesReplicaHeartBeatMissed) {
 			Integer i = numberOfTimesReplicaHeartBeatMissed.get(ary[1]);
-			if (i > 0) {
-				numberOfTimesReplicaHeartBeatMissed.put(ary[1], --i);
+			if(i == null){
+				addReplicaToSet(ary[i]);
+				numberOfTimesReplicaHeartBeatMissed.put(ary[1], 0);
+			}
+			else{
+				if (i > 0) {
+					numberOfTimesReplicaHeartBeatMissed.put(ary[1], --i);
+				}
 			}
 		}
 	}

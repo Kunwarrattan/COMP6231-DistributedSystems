@@ -23,7 +23,6 @@ public class Configuration {
 	public static final String ADMIN_PASSWORD = "Admin";
 	public static final String ADMIN_FILE_NAME ="Admin.txt";
 	public static final int PORT = 2020;
-	public static final String BASE_URL = "rmi://localhost:"+PORT+"/";
 	public static final String CENTRAL_REPO_NAME = "central";
 	public static final String CENTRAL_REPO_SER_FILE = "studentMapping.ser";
 	public static final int UDP_PORT_1 = 6789;
@@ -73,4 +72,7 @@ public class Configuration {
 	public static final String REPLICA_HEARTBEAT = "MY_HEARTBEAT";
 	public static final String HEART_BEAT_MONITOR = "HEART_BEAT_MONITOR";
 	public static final String RCV_MONITOR = "RCV_MONITOR";
+	public static final int UDP_FRONTEND_PORT_IMP = 4000;
+	public static final String SEQUENCER_IP = "";
+	public static final String UDP_DELIMITER_SEQ = ",";
 }
