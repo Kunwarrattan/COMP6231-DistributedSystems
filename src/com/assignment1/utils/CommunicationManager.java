@@ -101,7 +101,7 @@ public class CommunicationManager extends Thread {
 			String checkSum = getCheckSum(tempData);
 			String finalData = tempData + Configuration.COMMUNICATION_SEPERATOR
 					+ checkSum;
-			System.out.println("First packet.." + finalData);
+			//System.out.println("First packet.." + finalData);
 			if (finalData.length() > Configuration.MAX_PACKET_SIZE) {
 				throw new CommunicationException(
 						"String size cannot be greater than "
@@ -129,8 +129,8 @@ public class CommunicationManager extends Thread {
 								recievedData, 0, recvPacket.getLength());
 						String actualData = new String(recievedData);
 						actualData = actualData.trim();
-						System.out.println("response from the reciever.."
-								+ actualData);
+						//System.out.println("response from the reciever.."
+							//	+ actualData);
 						if (StringUtils.isNotBlank(actualData)) {
 							String[] arry = actualData
 									.split(Configuration.COMMUNICATION_SEPERATOR);
@@ -161,9 +161,9 @@ public class CommunicationManager extends Thread {
 													recvPacket.getAddress(),
 													recvPacket.getPort());
 											sendingSocket.send(sendPacket);
-											System.out
-													.println("Last packet to the reciever "
-															+ finalData);
+//										//	System.out
+//													.println("Last packet to the reciever "
+//															+ finalData);
 										}
 									}
 								}
@@ -190,7 +190,7 @@ public class CommunicationManager extends Thread {
 				break;
 		}
 		if (result) {
-			System.out.println("Successfully sent,.");
+		//	System.out.println("Successfully sent,.");
 			return timeStamp;
 		}
 		if (i >= Configuration.MAX_NO_OF_TRIES) {
@@ -220,7 +220,7 @@ public class CommunicationManager extends Thread {
 			try {
 				recievingSocket.receive(recvPacket);
 				String actualData = returnProcessedData(recvPacket);
-				System.out.println("First packet recieved.." + actualData);
+				//System.out.println("First packet recieved.." + actualData);
 				if (verifyExpectedData(actualData, 3, null)) {
 					String response = actualData
 							+ Configuration.COMMUNICATION_SEPERATOR
@@ -229,8 +229,8 @@ public class CommunicationManager extends Thread {
 					DatagramPacket reply = new DatagramPacket(responseByte,
 							responseByte.length, recvPacket.getAddress(),
 							recvPacket.getPort());
-					System.out.println("Response packet to the sender.."
-							+ response);
+//					System.out.println("Response packet to the sender.."
+//							+ response);
 					recievingSocket.send(reply);
 					String data[] = actualData
 							.split(Configuration.COMMUNICATION_SEPERATOR);
@@ -247,15 +247,15 @@ public class CommunicationManager extends Thread {
 					recievingSocket.setSoTimeout(Configuration.RECV_TIMEOUT);
 					recievingSocket.receive(recvPacket);
 					actualData = returnProcessedData(recvPacket);
-					System.out.println("Final packet from sender.."
-							+ actualData);
+//					System.out.println("Final packet from sender.."
+//							+ actualData);
 					if (verifyExpectedData(actualData, 3, data[0])) {
-						System.out.println("Verified after the final packet..");
+					//	System.out.println("Verified after the final packet..");
 						result = dataRecieved;
 					}
 				}
 			} catch (SocketTimeoutException e) {
-				System.out.println("Reciever Timeout..");
+				//System.out.println("Reciever Timeout..");
 				try {
 					recievingSocket.setSoTimeout(0);
 				} catch (Exception ex) {
@@ -273,7 +273,7 @@ public class CommunicationManager extends Thread {
 						.split(Configuration.COMMUNICATION_SEPERATOR);
 				facilitator.pushToQueue(resp[0], result);
 				result = null;
-				System.out.println("Successfully recieved,.");
+				//System.out.println("Successfully recieved,.");
 			}
 
 		}
