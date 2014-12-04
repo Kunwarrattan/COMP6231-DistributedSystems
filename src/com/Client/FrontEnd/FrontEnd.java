@@ -3,7 +3,7 @@ package com.Client.FrontEnd;
 import java.io.File;
 import java.net.SocketException;
 
-import org.apache.commons.io.FileUtils;
+//import org.apache.commons.io.FileUtils;
 import org.omg.CORBA.ORB;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
@@ -36,7 +36,7 @@ public class FrontEnd {
 		  
 		  String str1 = orb.object_to_string(obj); 
 		  
-		  FileUtils.writeStringToFile(new File(".//" + Configuration.LIBRARY1 + "IOR.txt"), str1);
+		  //FileUtils.writeStringToFile(new File(".//" + Configuration.LIBRARY1 + "IOR.txt"), str1);
 		  
 		  rootPoa.the_POAManager().activate(); 
 		  orb.run();

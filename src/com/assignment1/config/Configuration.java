@@ -23,11 +23,23 @@ public class Configuration {
 	public static final String ADMIN_PASSWORD = "Admin";
 	public static final String ADMIN_FILE_NAME ="Admin.txt";
 	public static final int PORT = 2020;
+	public static final String BASE_URL = "rmi://localhost:"+PORT+"/";
 	public static final String CENTRAL_REPO_NAME = "central";
 	public static final String CENTRAL_REPO_SER_FILE = "studentMapping.ser";
+	
 	public static final int UDP_PORT_1 = 6789;
 	public static final int UDP_PORT_2 = 6790;
 	public static final int UDP_PORT_3 = 6791;
+	
+	public static final int K_UDP_PORT_1 = 7789;
+	public static final int K_UDP_PORT_2 = 7790;
+	public static final int K_UDP_PORT_3 = 7791;
+	
+	public static final int V_UDP_PORT_1 = 8789;
+	public static final int V_UDP_PORT_2 = 8790;
+	public static final int V_UDP_PORT_3 = 8791;
+	
+	
 	public static final String UDP_DELIMITER = ":";
 	public static final int[] UDP_PORTS = {UDP_PORT_1,UDP_PORT_2,UDP_PORT_3};
 	public static final int BOOK_NOT_FOUND = 0;
@@ -72,7 +84,17 @@ public class Configuration {
 	public static final String REPLICA_HEARTBEAT = "MY_HEARTBEAT";
 	public static final String HEART_BEAT_MONITOR = "HEART_BEAT_MONITOR";
 	public static final String RCV_MONITOR = "RCV_MONITOR";
-	public static final int UDP_FRONTEND_PORT_IMP = 4000;
+	public static final int UDP_FRONTEND_PORT_IMP = 0;
+	public static final String UDP_DELIMITER_SEQ = "";
 	public static final String SEQUENCER_IP = "";
-	public static final String UDP_DELIMITER_SEQ = ",";
+	public static final int UDP_PORT_IMP_1 = 0;
+	public static final int UDP_PORT_IMP_2 = 0;
+	public static final int UDP_PORT_IMP_3 = 0;
+	
+	public static final int FRONTEND_RM_UDP_PORT = 0;
+	public static final String  FRONTEND_RM_IP= "";
+	
+	public static final int DEAMON_RM_UDP_PORT = 0;
+	public static final String  DEAMON_RM_IP= "";
+	
 }

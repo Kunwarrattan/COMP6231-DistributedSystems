@@ -69,14 +69,19 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 				if(responseMap.get(Configuration.REPLICA1).equals(responseMap.get(Configuration.REPLICA3))){
 					return ;
 				}else{
-					//call RM for 3 is diff
+					String flag = Configuration.REPLICA_SHUT_DOWN_CMD
+								 	+Configuration.REPLICA3;
+					MGR.send(flag, Configuration.DEAMON_RM_IP, Configuration.RM_RECV_PORT);
 				}
 			}else if(responseMap.get(Configuration.REPLICA1).equals(responseMap.get(Configuration.REPLICA3))){
-				
-					//call RM 2 is diff
+				String flag = Configuration.REPLICA_SHUT_DOWN_CMD
+									+Configuration.REPLICA2;
+				MGR.send(flag, Configuration.DEAMON_RM_IP, Configuration.RM_RECV_PORT);
 				}
 			else if(responseMap.get(Configuration.REPLICA2).equals(responseMap.get(Configuration.REPLICA3))){
-				//1 is diff
+				String flag = Configuration.REPLICA_SHUT_DOWN_CMD
+									+Configuration.REPLICA1;
+				MGR.send(flag, Configuration.DEAMON_RM_IP, Configuration.RM_RECV_PORT);
 			}
 			
 		} catch (CommunicationException | IOException | InterruptedException
@@ -96,7 +101,7 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 					+ Configuration.UDP_DELIMITER + password
 					+ Configuration.UDP_DELIMITER + bookName
 					+ Configuration.UDP_DELIMITER + authorName;
-
+			
 			String timeStamp = MGR.send(data, Configuration.SEQUENCER_IP,
 					Configuration.UDP_FRONTEND_PORT_IMP);
 			String responseSet = getResponseSet(timeStamp);
@@ -115,19 +120,23 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 				if(responseMap.get(Configuration.REPLICA1).equals(responseMap.get(Configuration.REPLICA3))){
 					return ;
 				}else{
-					//call RM for 3 is diff
+					String flag = Configuration.REPLICA_SHUT_DOWN_CMD
+								 	+Configuration.REPLICA3;
+					MGR.send(flag, Configuration.DEAMON_RM_IP, Configuration.RM_RECV_PORT);
 				}
 			}else if(responseMap.get(Configuration.REPLICA1).equals(responseMap.get(Configuration.REPLICA3))){
-				
-					//call RM 2 is diff
+				String flag = Configuration.REPLICA_SHUT_DOWN_CMD
+									+Configuration.REPLICA2;
+				MGR.send(flag, Configuration.DEAMON_RM_IP, Configuration.RM_RECV_PORT);
 				}
 			else if(responseMap.get(Configuration.REPLICA2).equals(responseMap.get(Configuration.REPLICA3))){
-				//1 is diff
+				String flag = Configuration.REPLICA_SHUT_DOWN_CMD
+									+Configuration.REPLICA1;
+				MGR.send(flag, Configuration.DEAMON_RM_IP, Configuration.RM_RECV_PORT);
 			}
 			
 		} catch (CommunicationException | IOException | InterruptedException
 				| ExecutionException | TimeoutException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -212,16 +221,21 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 			
 			if( responseMap.get(Configuration.REPLICA1).equals(responseMap.get(Configuration.REPLICA2))){
 				if(responseMap.get(Configuration.REPLICA1).equals(responseMap.get(Configuration.REPLICA3))){
-					return "";
+					return ;
 				}else{
-					//call RM for 3 is diff
+					String flag = Configuration.REPLICA_SHUT_DOWN_CMD
+								 	+Configuration.REPLICA3;
+					MGR.send(flag, Configuration.DEAMON_RM_IP, Configuration.RM_RECV_PORT);
 				}
 			}else if(responseMap.get(Configuration.REPLICA1).equals(responseMap.get(Configuration.REPLICA3))){
-				
-					//call RM 2 is diff
+				String flag = Configuration.REPLICA_SHUT_DOWN_CMD
+									+Configuration.REPLICA2;
+				MGR.send(flag, Configuration.DEAMON_RM_IP, Configuration.RM_RECV_PORT);
 				}
 			else if(responseMap.get(Configuration.REPLICA2).equals(responseMap.get(Configuration.REPLICA3))){
-				//1 is diff
+				String flag = Configuration.REPLICA_SHUT_DOWN_CMD
+									+Configuration.REPLICA1;
+				MGR.send(flag, Configuration.DEAMON_RM_IP, Configuration.RM_RECV_PORT);
 			}
 			
 		} catch (CommunicationException | IOException | InterruptedException
