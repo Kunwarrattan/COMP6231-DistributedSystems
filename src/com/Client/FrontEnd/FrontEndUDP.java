@@ -2,6 +2,7 @@ package com.Client.FrontEnd;
 
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -47,7 +48,7 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 					+ Configuration.UDP_DELIMITER + userName
 					+ Configuration.UDP_DELIMITER + password
 					+ Configuration.UDP_DELIMITER + institutionName;
-					
+			System.out.println("Request from "+ userName + " To Server " + institutionName + " received at " + new Date().getTime() + " for creating account for " + firstName + " " + lastName);		
 			String timeStamp = MGR.send(data, Configuration.SEQUENCER_IP,
 					Configuration.SEQUENCER_RECV_PORT);
 			String responseSet = getResponseSet(timeStamp);
@@ -99,7 +100,7 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 					+ Configuration.UDP_DELIMITER + bookName
 					+ Configuration.UDP_DELIMITER + authorName
 					+ Configuration.UDP_DELIMITER + institutionName;
-			
+			System.out.println("Request from "+ userName + " To Server " + institutionName + " received at " + new Date().getTime() + " for reservebook for Bookname "+ bookName +  " Authore name " + authorName);
 			String timeStamp = MGR.send(data, Configuration.SEQUENCER_IP,
 					Configuration.SEQUENCER_RECV_PORT);
 			String responseSet = getResponseSet(timeStamp);
@@ -158,7 +159,7 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 					+ Configuration.UDP_DELIMITER + bookName
 					+ Configuration.UDP_DELIMITER + authorName
 					+ Configuration.UDP_DELIMITER + institutionName;
-
+			System.out.println("Request from "+ userName + " To Server " + institutionName + " received at " + new Date().getTime() + " for reservebook for Bookname "+ bookName +  " Authore name " + authorName);
 			String timeStamp = MGR.send(data, Configuration.SEQUENCER_IP,
 					Configuration.SEQUENCER_RECV_PORT);
 			String responseSet = getResponseSet(timeStamp);
@@ -209,6 +210,7 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 					+ Configuration.UDP_DELIMITER + adminPassword
 					+ Configuration.UDP_DELIMITER + institutionName
 					+ Configuration.UDP_DELIMITER + days;
+			System.out.println("Request from "+ adminUserName + " To Server " + institutionName + " received at " + new Date().getTime() + " for check non returner lists");
 			String timeStamp = MGR.send(data, Configuration.SEQUENCER_IP,
 					Configuration.SEQUENCER_RECV_PORT);
 			String responseSet = getResponseSet(timeStamp);
