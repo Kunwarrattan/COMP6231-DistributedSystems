@@ -35,6 +35,7 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 		
 		@SuppressWarnings("unused")
 		LoggerTask log = new LoggerTask();
+		@SuppressWarnings("unused")
 		ServerFunction UDP = new ServerFunction(library1,0,udpPort1,replica1);
 		//UDPClass = new UDPClass(this, true);
 		if (library1.equals(Configuration.LIBRARY1))

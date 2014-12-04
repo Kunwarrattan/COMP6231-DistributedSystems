@@ -45,6 +45,7 @@ public class Test1 extends Thread{
 			}
 		}
 	}
+	@SuppressWarnings("static-access")
 	public void run(){
 		int i = 0;
 		while(i < 20){

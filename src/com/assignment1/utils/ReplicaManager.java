@@ -161,6 +161,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 		}
 	}
 
+	@SuppressWarnings("static-access")
 	private void incrementNotifcationNotRecievedCount()
 			throws CommunicationException, IOException, InterruptedException,
 			ExecutionException, TimeoutException {

@@ -7,6 +7,7 @@ import java.util.Date;
  * @author Kaushik
  *
  */
+@SuppressWarnings("serial")
 public class Book implements Serializable{
 	private String name;
 	private String author;

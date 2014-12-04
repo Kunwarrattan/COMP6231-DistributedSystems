@@ -30,6 +30,7 @@ public class StudentClient {
 	private String logFile = Configuration.CURRENT_DIR
 			+ Configuration.CENTRAL_REPO_NAME + "//";
 
+	@SuppressWarnings("unchecked")
 	public StudentClient() throws Exception {
 		File folder = new File(logFile);
 		FileUtils.forceMkdir(folder);

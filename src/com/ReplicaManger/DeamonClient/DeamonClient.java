@@ -175,6 +175,7 @@ public class DeamonClient extends CommunicationFacilitator {
 	public static void main(String[] args) throws CommunicationException,
 			IOException, InterruptedException, ExecutionException,
 			TimeoutException {
+		@SuppressWarnings("unused")
 		DeamonClient dm = new DeamonClient();
 	}
 

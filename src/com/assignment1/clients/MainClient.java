@@ -20,6 +20,7 @@ public class MainClient {
 		System.out
 				.println("Welcome to Distributed Reservation Management System");
 		boolean loopCondition = true;
+		@SuppressWarnings("resource")
 		Scanner keyboard = new Scanner(System.in);
 		MainClient client = new MainClient();
 		ArrayList<Thread> threads = new ArrayList<Thread>();

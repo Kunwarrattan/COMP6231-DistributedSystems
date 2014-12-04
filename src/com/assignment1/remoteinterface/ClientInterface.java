@@ -1,7 +1,7 @@
 package com.assignment1.remoteinterface;
 
 import java.io.IOException;
-import java.net.SocketException;
+//import java.net.SocketException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -97,14 +97,15 @@ public class ClientInterface extends CommunicationFacilitator implements
 	// Do for all 3 replicas
 	public static void main(String[] args) throws Exception {
 	
-		ClientInterface instance1 = new ClientInterface(Configuration.REPLICA1);
-		ClientInterface instance2 = new ClientInterface(Configuration.REPLICA2);
-		ClientInterface instance3 = new ClientInterface(Configuration.REPLICA3);
-		ReplicaManager mgr = new ReplicaManager();
+		new ClientInterface(Configuration.REPLICA1);
+		new ClientInterface(Configuration.REPLICA2);
+		new ClientInterface(Configuration.REPLICA3);
+		new ReplicaManager();
 
 	}
 
 	
+	@SuppressWarnings("static-access")
 	private void sendNotificaton() throws CommunicationException, IOException,
 			InterruptedException, ExecutionException, TimeoutException {
 		String expected = "";

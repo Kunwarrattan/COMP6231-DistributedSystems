@@ -19,6 +19,7 @@ public class CommunicationMgrClient {
 		mgr.exit();
 		
 	}*/
+	@SuppressWarnings("static-access")
 	public static void main(String[] args) throws IOException, InterruptedException{
 		Client client1 = new Client();
 		Client client2 = new Client();

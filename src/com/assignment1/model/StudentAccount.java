@@ -9,6 +9,7 @@ import com.assignment1.config.Configuration;
  * @author Kaushik
  *
  */
+@SuppressWarnings("serial")
 public class StudentAccount implements Serializable{
 	private String firstName;
 	private String lastName;

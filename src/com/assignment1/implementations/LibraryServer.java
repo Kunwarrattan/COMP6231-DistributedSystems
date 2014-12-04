@@ -49,6 +49,7 @@ public class LibraryServer implements
 	private LinkedHashMap<String, StudentAccount> accountsCopy = new LinkedHashMap<String, StudentAccount>();
 	private int portForGetNonReturners = 0;
 	private int portForInterLibraryCommunication = 0;
+	@SuppressWarnings("unused")
 	private UDPManager udpMgr = null;
 	private String replicaName = null;
 
@@ -66,6 +67,7 @@ public class LibraryServer implements
 	 * @param portForInterLibraryCommunication
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	public LibraryServer(String name, int portForGetNonReturners,
 			int portForInterLibraryCommunication,String replicaName) throws Exception {
 		System.out.println("Library Server Started" + name + " Replica = " + replicaName + "Port" + portForGetNonReturners);

@@ -48,6 +48,7 @@ LibraryManagementInterfaceOperations, Runnable {
 	private int nonReturnersport = 0;
 	private int portForInterLibraryCommunication = 0;
 	private boolean serverStop = true;
+	@SuppressWarnings("unused")
 	private PortClass portclass = null;
 	private String replicaName = "";
 

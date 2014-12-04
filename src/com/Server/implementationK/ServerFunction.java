@@ -1,18 +1,18 @@
 package com.Server.implementationK;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+//import java.io.File;
+//import java.io.FileInputStream;
+//import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+//import java.io.ObjectInputStream;
+//import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
+//import java.net.DatagramPacket;
+//import java.net.DatagramSocket;
+//import java.net.InetAddress;
+//import java.net.SocketException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,7 +24,7 @@ import java.util.Scanner;
 
 import com.assignment1.abstractclass.CommunicationFacilitator;
 import com.assignment1.utils.CommunicationManager;
-import com.assignment1.config.Configuration;
+//import com.assignment1.config.Configuration;
 /**
  * @author Kunwar
  *
@@ -44,7 +44,9 @@ public class ServerFunction extends CommunicationFacilitator
 	private String servername;
 	private int portNumber;
 	private String replicaName;
+	@SuppressWarnings("unused")
 	private UDPClass Udp = null; 
+	@SuppressWarnings("unused")
 	private CommunicationManager mgrone;
 	public volatile boolean stopServer = true;
 	
@@ -79,6 +81,7 @@ public class ServerFunction extends CommunicationFacilitator
 	 * 
 	 * */
 	public void setup(){
+	@SuppressWarnings({ "unused", "resource" })
 	Scanner in = new Scanner(System.in);
 	//System.out.println("Press y if you want to setup the database :");
 	//String k = in.next().trim();

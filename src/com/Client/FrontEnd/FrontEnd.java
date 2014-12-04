@@ -36,9 +36,12 @@ public class FrontEnd {
 		  
 		  FileUtils.writeStringToFile(new File(".//" + Configuration.LIBRARY1 + "IOR.txt"), str1);
 		  
+		  System.out.println("Front End Server is running and listening for the clients.......");
+		  
 		  rootPoa.the_POAManager().activate(); 
+		  
 		  orb.run();
-		 
+		  
 			} catch (Exception e) {
 			e.printStackTrace();
 		}
