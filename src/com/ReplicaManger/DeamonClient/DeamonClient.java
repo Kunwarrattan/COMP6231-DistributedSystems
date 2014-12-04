@@ -1,7 +1,6 @@
 package com.ReplicaManger.DeamonClient;
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -17,20 +16,22 @@ public class DeamonClient extends CommunicationFacilitator {
 
 	Scanner in = new Scanner(System.in);
 
-	public DeamonClient() throws CommunicationException, IOException, InterruptedException, ExecutionException, TimeoutException {
-		mgrone = new CommunicationManager();
+	public DeamonClient() throws CommunicationException, IOException,
+			InterruptedException, ExecutionException, TimeoutException {
+		mgrone = new CommunicationManager(this);
 		showMenu();
 	}
 
 	public void showMenu() throws CommunicationException, IOException,
-	InterruptedException, ExecutionException, TimeoutException {
-		do {
+			InterruptedException, ExecutionException, TimeoutException {
+		boolean loopCondition = true;
+		while (loopCondition) {
 			System.out.println("Operations available for you..");
 			System.out.println("Press '1' to start particular replica");
 			System.out.println("Press '2' to start all replicas");
 			System.out.println("Press '3' to kill particular replica");
 			System.out.println("Press '4' to kill all replica");
-
+			System.out.println("Press '5' to quit");
 			System.out.print("Please Enter you Option :");
 
 			int value = in.nextInt();
@@ -52,51 +53,55 @@ public class DeamonClient extends CommunicationFacilitator {
 				killAllReplicas();
 				break;
 
+			case 5:
+				loopCondition = false;
+				break;
+
 			default:
 				System.out.println("Invalid Output");
+
+				break;
 			}
-		} while (true);
+		}
 
 	}
 
 	private void startupReplica() throws CommunicationException, IOException,
-	InterruptedException, ExecutionException, TimeoutException {
+			InterruptedException, ExecutionException, TimeoutException {
 		System.out.println("Please Select the replica to startup");
 		System.out
-		.println("PRESS 1 FOR REPLICA 1 \n PRESS 2 FOR REPLICA 2 \n PRESS 3 FOR REPLICA 3 \n ");
+				.println("PRESS 1 FOR REPLICA 1 \n PRESS 2 FOR REPLICA 2 \n PRESS 3 FOR REPLICA 3 \n ");
 		int key = in.nextInt();
 		String data;
-		do {
-			switch (key) {
-			case 1:
-				data = Configuration.REPLICA_START_CMD
-				+ Configuration.UDP_DELIMITER + Configuration.REPLICA1;
-				mgrone.send(data, Configuration.DEAMON_RM_IP,
-						Configuration.RM_RECV_PORT);
-
-				break;
-			case 2:
-				data = Configuration.REPLICA_START_CMD
-				+ Configuration.UDP_DELIMITER + Configuration.REPLICA2;
-				mgrone.send(data, Configuration.DEAMON_RM_IP,
-						Configuration.RM_RECV_PORT);
-				break;
-			case 3:
-				data = Configuration.REPLICA_START_CMD
-				+ Configuration.UDP_DELIMITER + Configuration.REPLICA3;
-				mgrone.send(data, Configuration.DEAMON_RM_IP,
-						Configuration.RM_RECV_PORT);
-				break;
-			default:
-				System.out.println("Invalid ! entry");
-			}
-		} while (true);
+		switch (key) {
+		case 1:
+			data = Configuration.REPLICA_START_CMD
+					+ Configuration.UDP_DELIMITER + Configuration.REPLICA1;
+			mgrone.send(data, Configuration.DEAMON_RM_IP,
+					Configuration.RM_RECV_PORT);
+			break;
+		case 2:
+			data = Configuration.REPLICA_START_CMD
+					+ Configuration.UDP_DELIMITER + Configuration.REPLICA2;
+			mgrone.send(data, Configuration.DEAMON_RM_IP,
+					Configuration.RM_RECV_PORT);
+			break;
+		case 3:
+			data = Configuration.REPLICA_START_CMD
+					+ Configuration.UDP_DELIMITER + Configuration.REPLICA3;
+			mgrone.send(data, Configuration.DEAMON_RM_IP,
+					Configuration.RM_RECV_PORT);
+			break;
+		default:
+			System.out.println("Invalid ! entry");
+		}
+		in.nextLine();
 		// String responseSet = getResponseSet(timeStamp);
 	}
 
 	private void startupAllReplicas() throws CommunicationException,
-	IOException, InterruptedException, ExecutionException,
-	TimeoutException {
+			IOException, InterruptedException, ExecutionException,
+			TimeoutException {
 		String data = Configuration.REPLICA_START_CMD
 				+ Configuration.UDP_DELIMITER + Configuration.REPLICA1;
 		mgrone.send(data, Configuration.DEAMON_RM_IP,
@@ -115,42 +120,42 @@ public class DeamonClient extends CommunicationFacilitator {
 	}
 
 	private void killReplica() throws CommunicationException, IOException,
-	InterruptedException, ExecutionException, TimeoutException {
+			InterruptedException, ExecutionException, TimeoutException {
 		System.out.println("Please Select the replica to kill");
 		System.out
-		.println("PRESS 1 FOR REPLICA 1 \n PRESS 2 FOR REPLICA 2 \n PRESS 3 FOR REPLICA 3 \n ");
+				.println("PRESS 1 FOR REPLICA 1 \n PRESS 2 FOR REPLICA 2 \n PRESS 3 FOR REPLICA 3 \n ");
 		int key = in.nextInt();
 		String data;
-		do {
-			switch (key) {
-			case 1:
-				data = Configuration.REPLICA_SHUT_DOWN_CMD
-				+ Configuration.UDP_DELIMITER + Configuration.REPLICA1;
-				mgrone.send(data, Configuration.DEAMON_RM_IP,
-						Configuration.RM_RECV_PORT);
+		switch (key) {
+		case 1:
+			data = Configuration.REPLICA_SHUT_DOWN_CMD
+					+ Configuration.UDP_DELIMITER + Configuration.REPLICA1;
+			mgrone.send(data, Configuration.DEAMON_RM_IP,
+					Configuration.RM_RECV_PORT);
 
-				break;
-			case 2:
-				data = Configuration.REPLICA_SHUT_DOWN_CMD
-				+ Configuration.UDP_DELIMITER + Configuration.REPLICA2;
-				mgrone.send(data, Configuration.DEAMON_RM_IP,
-						Configuration.RM_RECV_PORT);
-				break;
-			case 3:
-				data = Configuration.REPLICA_SHUT_DOWN_CMD
-				+ Configuration.UDP_DELIMITER + Configuration.REPLICA3;
-				mgrone.send(data, Configuration.DEAMON_RM_IP,
-						Configuration.RM_RECV_PORT);
-				break;
-			default:
-				System.out.println("Invalid ! entry");
-			}
-		} while (true);
+			break;
+		case 2:
+			data = Configuration.REPLICA_SHUT_DOWN_CMD
+					+ Configuration.UDP_DELIMITER + Configuration.REPLICA2;
+			mgrone.send(data, Configuration.DEAMON_RM_IP,
+					Configuration.RM_RECV_PORT);
+			break;
+		case 3:
+			data = Configuration.REPLICA_SHUT_DOWN_CMD
+					+ Configuration.UDP_DELIMITER + Configuration.REPLICA3;
+			mgrone.send(data, Configuration.DEAMON_RM_IP,
+					Configuration.RM_RECV_PORT);
+			break;
+		default:
+			System.out.println("Invalid ! entry");
+			break;
+		}
+		in.nextLine();
 
 	}
 
 	private void killAllReplicas() throws CommunicationException, IOException,
-	InterruptedException, ExecutionException, TimeoutException {
+			InterruptedException, ExecutionException, TimeoutException {
 		String data = Configuration.REPLICA_SHUT_DOWN_CMD
 				+ Configuration.UDP_DELIMITER + Configuration.REPLICA1;
 		mgrone.send(data, Configuration.DEAMON_RM_IP,
@@ -166,10 +171,11 @@ public class DeamonClient extends CommunicationFacilitator {
 		mgrone.send(data, Configuration.DEAMON_RM_IP,
 				Configuration.RM_RECV_PORT);
 	}
-	
-	public static void main(String[] args) throws CommunicationException, IOException, InterruptedException, ExecutionException, TimeoutException{
+
+	public static void main(String[] args) throws CommunicationException,
+			IOException, InterruptedException, ExecutionException,
+			TimeoutException {
 		DeamonClient dm = new DeamonClient();
 	}
-	
 
 }

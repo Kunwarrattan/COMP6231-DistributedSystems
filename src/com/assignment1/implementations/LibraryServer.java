@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import IdlFiles.LibraryException;
 import IdlFiles.LibraryManagementInterfaceOperations;
 
@@ -26,8 +29,6 @@ import com.assignment1.model.StudentAccount;
 import com.assignment1.utils.CommunicationManager;
 import com.assignment1.utils.FileOps;
 import com.assignment1.utils.UDPManager;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * This class represents the library server and holds all the information
@@ -141,6 +142,7 @@ public class LibraryServer implements
 	public void exit() {
 		this.stopServer = false;
 		this.mgrone.exit();
+		System.out.println("LibraryServer : "+this.replicaName + " : exit() :");
 	}
 
 	/**
@@ -804,7 +806,8 @@ public class LibraryServer implements
 				String timestamp = arry[0];
 				String request = arry[1];
 				String hostname = arry[2];
-				int port = Integer.parseInt(arry[3]);
+				//TODO: change port to SEQUENCER_RECV_PORT as shown below in all the implementation.. 
+				int port = Configuration.SEQUENCER_RECV_PORT;
 				String response = timestamp + Configuration.UDP_DELIMITER + this.replicaName+Configuration.UDP_DELIMITER
 						+ Configuration.SUCCESS_STRING;
 				String failureResponse = timestamp + Configuration.UDP_DELIMITER + this.replicaName+ Configuration.UDP_DELIMITER
