@@ -92,9 +92,12 @@ public class Configuration {
 	public static final int UDP_PORT_IMP_3 = 0;
 	
 	public static final int FRONTEND_RM_UDP_PORT = 0;
-	public static final String  FRONTEND_RM_IP= "";
+	public static final String  FRONTEND_IP= "";
 	
 	public static final int DEAMON_RM_UDP_PORT = 0;
 	public static final String  DEAMON_RM_IP= "localhost";
+	public static final String ERROR_IN_OUTPUT_STRING = "ERROR"; 
+	public static final String LIST_ACTIVE_REPLICA = "LIST_REPLICA";
+	public static final String REPLICA_COUNT_STR = "REPLICA_COUNT";
 	
 }

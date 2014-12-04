@@ -65,6 +65,10 @@ public class Test1 extends Thread{
 		}
 	}
 	public static void main(String[] args) {
+		int ar[] = {1,2};
+		int z = 0;
+		System.out.println(ar[z++] + " : "+ar[z++]);
+		
 		HashMap<String, Integer> i = new HashMap<>();
 		i.put("x", new Integer(1));
 		i.put("y", new Integer(11));
