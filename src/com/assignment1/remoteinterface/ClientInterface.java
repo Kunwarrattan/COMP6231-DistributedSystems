@@ -41,21 +41,47 @@ public class ClientInterface extends CommunicationFacilitator implements
 			mcgill = new LibraryServer(
 					Configuration.LIBRARY2, 0,
 					Configuration.UDP_PORT_2,
-					Configuration.REPLICA2);
+					Configuration.REPLICA1);
 			vanier = new LibraryServer(
 					Configuration.LIBRARY3, 0,
 					Configuration.UDP_PORT_3,
-					Configuration.REPLICA3);
+					Configuration.REPLICA1);
 			//TODO:	replicate it in all the other implementation
 			instancesNotRunning = false;
 		}
 		if (name.equals(Configuration.REPLICA2)) {
 			mgrone = new CommunicationManager(
 					Configuration.REPLICA_INTERFACE_PORT2, this);
+			concordia = new LibraryServer(
+					Configuration.LIBRARY1, 0,
+					Configuration.K_UDP_PORT_1,
+					Configuration.REPLICA2);
+			mcgill = new LibraryServer(
+					Configuration.LIBRARY2, 0,
+					Configuration.K_UDP_PORT_1,
+					Configuration.REPLICA2);
+			vanier = new LibraryServer(
+					Configuration.LIBRARY3, 0,
+					Configuration.K_UDP_PORT_1,
+					Configuration.REPLICA2);
+			instancesNotRunning = false;
 		}
 		if (name.equals(Configuration.REPLICA3)) {
 			mgrone = new CommunicationManager(
 					Configuration.REPLICA_INTERFACE_PORT3, this);
+			concordia = new LibraryServer(
+					Configuration.LIBRARY1, 0,
+					Configuration.V_UDP_PORT_1,
+					Configuration.REPLICA3);
+			mcgill = new LibraryServer(
+					Configuration.LIBRARY2, 0,
+					Configuration.V_UDP_PORT_1,
+					Configuration.REPLICA3);
+			vanier = new LibraryServer(
+					Configuration.LIBRARY3, 0,
+					Configuration.V_UDP_PORT_1,
+					Configuration.REPLICA3);
+			instancesNotRunning = false;
 		}
 		Thread thread1 = new Thread(this, Configuration.HEART_BEAT_MONITOR);
 		Thread thread2 = new Thread(this, Configuration.RCV_MONITOR);
@@ -163,7 +189,10 @@ public class ClientInterface extends CommunicationFacilitator implements
 								} else if (vanier != null) {
 									vanier.exit();
 								}
-
+								mcgill = null;
+								vanier = null;
+								concordia = null;
+								instancesNotRunning = true;
 							} else if (this.name.equals(Configuration.REPLICA3)) {
 								if (concordia != null) {
 									concordia.exit();
@@ -172,7 +201,10 @@ public class ClientInterface extends CommunicationFacilitator implements
 								} else if (vanier != null) {
 									vanier.exit();
 								}
-
+								mcgill = null;
+								vanier = null;
+								concordia = null;
+								instancesNotRunning = true;
 							}
 
 						} else if (request
@@ -196,11 +228,11 @@ public class ClientInterface extends CommunicationFacilitator implements
 								mcgill = new LibraryServer(
 										Configuration.LIBRARY2, 0,
 										Configuration.UDP_PORT_2,
-										Configuration.REPLICA2);
+										Configuration.REPLICA1);
 								vanier = new LibraryServer(
 										Configuration.LIBRARY3, 0,
 										Configuration.UDP_PORT_3,
-										Configuration.REPLICA3);
+										Configuration.REPLICA1);
 								//TODO:	replicate it in all the other implementation
 								instancesNotRunning = false;
 
@@ -218,7 +250,7 @@ public class ClientInterface extends CommunicationFacilitator implements
 								concordia = new com.Server.implementationK.LibraryServer(
 										Configuration.LIBRARY1, 0,
 										Configuration.K_UDP_PORT_1,
-										Configuration.REPLICA1);
+										Configuration.REPLICA2);
 								mcgill = new com.Server.implementationK.LibraryServer(
 										Configuration.LIBRARY2, 0,
 										Configuration.K_UDP_PORT_2,
@@ -226,7 +258,7 @@ public class ClientInterface extends CommunicationFacilitator implements
 								vanier = new com.Server.implementationK.LibraryServer(
 										Configuration.LIBRARY3, 0,
 										Configuration.K_UDP_PORT_3,
-										Configuration.REPLICA3);
+										Configuration.REPLICA2);
 
 							} else if (name.equals(Configuration.REPLICA3)) {
 								if (concordia != null) {
@@ -242,11 +274,11 @@ public class ClientInterface extends CommunicationFacilitator implements
 								concordia = new com.Server.implementationV.LibraryServer(
 										Configuration.LIBRARY1, 0,
 										Configuration.V_UDP_PORT_1,
-										Configuration.REPLICA1);
+										Configuration.REPLICA3);
 								mcgill = new com.Server.implementationV.LibraryServer(
 										Configuration.LIBRARY2, 0,
 										Configuration.V_UDP_PORT_2,
-										Configuration.REPLICA2);
+										Configuration.REPLICA3);
 								vanier = new com.Server.implementationV.LibraryServer(
 										Configuration.LIBRARY3, 0,
 										Configuration.V_UDP_PORT_3,

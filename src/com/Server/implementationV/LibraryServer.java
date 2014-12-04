@@ -168,6 +168,7 @@ LibraryManagementInterfaceOperations, Runnable {
 	public void exit() {
 		this.stopServer = false;
 		this.mgrone.exit();
+		System.out.println("LibraryServer : "+this.replicaName + " : exit() :");
 	}
 
 	/**
