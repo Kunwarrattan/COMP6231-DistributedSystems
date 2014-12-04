@@ -489,15 +489,18 @@ public class LibraryServer implements
 							if (checkWhetherDatePassedNumberOfDays(
 									book.getReservedDate(),
 									book.getCurrentDate(), days)) {
-								if (builder.length() == 0) {
-									builder.append("Educational Institution : ");
-									builder.append(name);
-									builder.append(System.lineSeparator());
-								}
-								builder.append(acct.getFirstName() + " ");
-								builder.append(acct.getLastName() + " ");
-								builder.append(acct.getPhNo());
-								builder.append(System.lineSeparator());
+//								if (builder.length() == 0) {
+//									builder.append("Educational Institution : ");
+//									builder.append(name);
+//									builder.append(System.lineSeparator());
+//								}
+								builder.append("\n"+acct.getUserName()+book.getName()+book.getAuthor());
+//								builder.append(acct.getFirstName() + " ");
+//								builder.append(acct.getLastName() + " ");
+//								builder.append(acct.getPhNo());
+//								builder.append("Educational Institution : "+name);
+								
+							//	builder.append(System.lineSeparator());
 								break;
 							}
 						}

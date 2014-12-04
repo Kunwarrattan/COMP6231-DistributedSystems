@@ -471,15 +471,16 @@ LibraryManagementInterfaceOperations, Runnable {
 							if (checkWhetherDatePassedNumberOfDays(
 									book.getReservedDate(),
 									book.getCurrentDate(), days)) {
-								if (builder.length() == 0) {
-									builder.append("Educational Institution : ");
-									builder.append(uname);
-									builder.append(System.lineSeparator());
-								}
-								builder.append(acct.getFirstName() + " ");
-								builder.append(acct.getLastName() + " ");
-								builder.append(acct.getPhNo());
-								builder.append(System.lineSeparator());
+								builder.append("\n"+acct.getUserName()+book.getName()+book.getAuthor());
+//								if (builder.length() == 0) {
+//									builder.append("Educational Institution : ");
+//									builder.append(uname);
+//									builder.append(System.lineSeparator());
+//								}
+//								builder.append(acct.getFirstName() + " ");
+//								builder.append(acct.getLastName() + " ");
+//								builder.append(acct.getPhNo());
+//								builder.append(System.lineSeparator());
 								break;
 							}
 						}

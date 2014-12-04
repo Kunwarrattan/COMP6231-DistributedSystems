@@ -48,51 +48,29 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 					this);
 	}
 
-//	public static void main(String[] args) {
-//		try{
-//		
-//		
-//		
-////		System.out.print(" \n Concordia Server is started at " + " " +(new Date().toString()+ " and is up and running \n\n"));
-////		log.WriteLog(" \n Concordia Server is started at " + " " +(new Date().toString()+ " and is up and running \n\n"));;
-////		
-////		System.out.print(" \n McGill Server is started at " + " " +(new Date().toString()+ " and is up and running \n\n"));
-////		log.WriteLog(" \n McGill Server is started at " + " " +(new Date().toString()+ " and is up and running \n\n"));
-////		
-////		System.out.print(" \n Vanier Server is started at " + " " +(new Date().toString()+ " and is up and running \n\n"));
-////		log.WriteLog(" \n Vanier Server is started at " + " " +(new Date().toString()+ " and is up and running \n\n"));
-////		
-////		System.out.print(" \n Concordia Server is started at PORT 1000" + " on " +(new Date().toString()+ " and is up and running \n\n"));
-////		log.WriteLog(" \n Concordia Server is started at PORT 1000" + " on " +(new Date().toString()+ " and is up and running \n\n"));;
-////		
-////		System.out.print(" \n McGill Server is started at PORT 1001 " + " on " +(new Date().toString()+ " and is up and running \n\n"));
-////		log.WriteLog(" \n McGill Server is started at PORT 1001" + " on " +(new Date().toString()+ " and is up and running \n\n"));
-////		
-////		System.out.print(" \n Vanier Server is started at  PORT 1002" + " on " +(new Date().toString()+ " and is up and running \n\n"));
-////		log.WriteLog(" \n Vanier Server is started at PORT 1002" + " on " +(new Date().toString()+ " and is up and running \n\n"));
-////		
-//		}catch(Exception err){
-//			err.printStackTrace();
-//		}finally{
-//			
-//		}
-//	}
-
 	@Override
 	public void createAccount(String firstName, String lastName,
 			String emailAddr, String phoneNumber, String userName,
-			String password, String institutionName) throws LibraryException {
+			String password, String institutionName) throws LibraryException{
 		ServerFunction serverfunction = new ServerFunction(this.server, this.port, this.replicaName);
 		String response = serverfunction.createAccount(firstName,lastName,emailAddr,phoneNumber,userName,password,institutionName);
-		
+		if(response.equalsIgnoreCase(" User Account for Successfully Created ")){
+			return;
+		}else{
+			throw new LibraryException(response);
+		}
 	}
 
 	@Override
 	public void reserveBook(String userName, String password, String bookName,
 			String authorName, String inst) throws LibraryException {
 		ServerFunction serverfunction = new ServerFunction(this.server, this.port, this.replicaName);
-		serverfunction.reserveBook(userName,password,bookName, authorName);
-		
+		String response = serverfunction.reserveBook(userName,password,bookName, authorName);
+		if(response.equalsIgnoreCase("issued Book")){
+			return; 
+		}else{
+			throw new LibraryException(response);
+		}
 	}
 
 	@Override
@@ -100,7 +78,12 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 			String bookName, String authorName, String inst)
 			throws LibraryException {
 		ServerFunction serverfunction = new ServerFunction(this.server, this.port, this.replicaName);
-		serverfunction.reserveInterLibrary(userName,password,bookName, authorName);
+		String response = serverfunction.reserveInterLibrary(userName,password,bookName, authorName);
+		if(response.equalsIgnoreCase("issued Book")){
+			return; 
+		}else{
+			throw new LibraryException(response);
+		}
 	}
 
 	@Override
@@ -113,7 +96,9 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 
 	@Override
 	public void exit(){
-		// TODO Auto-generated method stub
+		this.stopServer = false;
+		this.mgrone.exit();
+		System.out.println("LibraryServer : "+this.replicaName + " : exit() :");
 		
 	}
 	
@@ -190,7 +175,7 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 				} catch (CommunicationException | IOException
 						| InterruptedException | ExecutionException
 						| TimeoutException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
 			}

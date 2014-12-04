@@ -163,7 +163,7 @@ public class ServerFunction extends CommunicationFacilitator
 	
 					System.out.println(student.username + " Created");
 					logtask.WriteLog("User Account Successfully Created");
-					return  " User Account for  "+ username +"  Successfully Created on server " + this.servername;
+					return  " User Account for Successfully Created " ;
 			}
 			
 			// .....else condition whether there exists key for first character of the username
@@ -190,7 +190,7 @@ public class ServerFunction extends CommunicationFacilitator
 					logtask.WriteLog(student.username + " Created at "
 							+ dateFormat.format(cal.getTime()));
 					logtask.WriteLog("User Account Successfully Created");
-					return  " User Account for  "+ username +"  Successfully Created on server " + this.servername;
+					return  " User Account for Successfully Created " ;
 				}
 
 				// return if there exists same username related with particular
@@ -306,7 +306,8 @@ public class ServerFunction extends CommunicationFacilitator
 			e.printStackTrace();
 		}
 		
-		return "\nissued to username : " + username  + "  with key id = " + str + " bookname : " + bookname + " authorname : " + authorname;
+		//return "\nissued to username : " + username  + "  with key id = " + str + " bookname : " + bookname + " authorname : " + authorname;
+		return "issued Book";
 		
 	}
 
@@ -319,7 +320,7 @@ public class ServerFunction extends CommunicationFacilitator
 
 	public String getNonreturners(String AdminUsername, String AdminPassword,String instname, int numOfDays) {
 		LoggerTask logtask = null;
-		String str = " ";
+		String str = "";
 					try {
 						logtask = new LoggerTask();
 				
@@ -335,12 +336,15 @@ public class ServerFunction extends CommunicationFacilitator
 						long diffDays = lt / (1000 * 60 * 60 * 24);
 						if(diffDays >= numOfDays){
 						System.out.println(diffDays);
+						String response = "\n"+ book1.Username + book1.BookName + book1.AuthorName;
 						System.out.println("Bookname = "+book1.BookName + " | Authorname = " +
 								 book1.AuthorName + " | Username = " + book1.Username + " | Issuedate = "
 								 +book1.issueDate + " | Due Date " + book1.dueDate + " Above days :" + diffDays + " | Fine = " + diffDays*2);
-								 str+= "\n"+"Bookname = "+book1.BookName + " | Authorname = " +
-										 book1.AuthorName + " | Username = " + book1.Username + " | Issuedate = "
-										 +book1.issueDate + " | Due Date " + book1.dueDate + " Above days :" + diffDays + " | Fine = " + diffDays*2;
+						str+=response;
+						
+//								 str+= "\n"+"Bookname = "+book1.BookName + " | Authorname = " +
+//										 book1.AuthorName + " | Username = " + book1.Username + " | Issuedate = "
+//										 +book1.issueDate + " | Due Date " + book1.dueDate + " Above days :" + diffDays + " | Fine = " + diffDays*2;
 					}
 				 }
 				 logtask.WriteLog(str);
@@ -445,28 +449,33 @@ public class ServerFunction extends CommunicationFacilitator
 							if(portNumber != 1001 && udp.initiateConnectionWithOtherServers(1001, dataToSendToLibraries)){
 								updateBookHistory(username,bookname,authorname);
 								logtask.WriteLog("Book " + bookname +"  was registered in mcgill  library  from " + servername + " username : "+username + "at " + cal.getTime());
-								return "Book " + bookname +" was registered in mcgill library from " + servername + " username : "+username + "at " + cal.getTime();
+								//return "Book " + bookname +" was registered in mcgill library from " + servername + " username : "+username + "at " + cal.getTime();
+								return "issued Book";
 							}
 							else if(portNumber != 1002 && udp.initiateConnectionWithOtherServers(1002, dataToSendToLibraries)){
 								updateBookHistory(username,bookname,authorname);
 								logtask.WriteLog("Book " + bookname +"  was registered in vanier   from " + servername + " username : "+username + "at " + cal.getTime());
-								return "Book  " + bookname +" was registered in vanier library   from " + servername + " username : "+username + "at " + cal.getTime();
+								//return "Book  " + bookname +" was registered in vanier library   from " + servername + " username : "+username + "at " + cal.getTime();
+								return "issued Book";
 							}
 							else if(portNumber != 1000 && udp.initiateConnectionWithOtherServers(1000, dataToSendToLibraries)){
 								updateBookHistory(username,bookname,authorname);
 								logtask.WriteLog("Book " + bookname +"  was registered in concordia library   from " + servername + " username : "+username + "at " + cal.getTime());
-								return "Book " + bookname +"  was registered in concordia library   from " + servername + " username : "+username + "at " + cal.getTime();
+								//return "Book " + bookname +"  was registered in concordia library   from " + servername + " username : "+username + "at " + cal.getTime();
+								return "issued Book";
 							}
 					}
 					else{
 						logtask.WriteLog("registered with key id = " + str + " username = " + username);
-						return "registered with key id = " + str + " username = " + username;
+						//return "registered with key id = " + str + " username = " + username;
+						return "issued Book";
 					}
 		logtask.WriteLog("Book "+ bookname  +" with authorname : " + authorname+ " was not found in any of the libraries called from " + this.servername + " library");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return "Book .."+ bookname  +" with authorname : " + authorname+ " was not found in any of the libraries called from " + this.servername + " library";
+		
 	}
 	
 	public boolean reserveBookForInterLibrary(String instName,String bookName,String authorName) {
