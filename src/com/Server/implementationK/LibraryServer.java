@@ -89,29 +89,30 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 
 	@Override
 	public void reserveBook(String userName, String password, String bookName,
-			String authorName) throws LibraryException {
+			String authorName, String inst) throws LibraryException {
 		ServerFunction serverfunction = new ServerFunction(this.server, this.port, this.replicaName);
-		reserveBook(userName,password,bookName, authorName);
+		serverfunction.reserveBook(userName,password,bookName, authorName);
 		
 	}
 
 	@Override
 	public void reserveInterLibrary(String userName, String password,
-			String bookName, String authorName) throws LibraryException {
+			String bookName, String authorName, String inst)
+			throws LibraryException {
 		ServerFunction serverfunction = new ServerFunction(this.server, this.port, this.replicaName);
-		reserveInterLibrary(userName,password,bookName, authorName);
+		serverfunction.reserveInterLibrary(userName,password,bookName, authorName);
 	}
 
 	@Override
 	public String getNonRetuners(String adminUserName, String adminPassword,
 			String institutionName, int days) throws LibraryException {
 		ServerFunction serverfunction = new ServerFunction(this.server, this.port, this.replicaName);
-		String str = getNonRetuners(adminUserName, adminPassword, institutionName, days);
+		String str = serverfunction.getNonreturners(adminUserName, adminPassword, institutionName, days);
 		return str;
 	}
 
 	@Override
-	public void exit() throws LibraryException {
+	public void exit(){
 		// TODO Auto-generated method stub
 		
 	}
@@ -154,7 +155,7 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 					int i = 0;
 					try {
 						reserveBook(requestParam[++i], requestParam[++i],
-								requestParam[++i], requestParam[++i]);
+								requestParam[++i], requestParam[++i],requestParam[++i]);
 
 					} catch (LibraryException e) {
 						response =failureResponse;
@@ -167,7 +168,7 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 					try {
 						reserveInterLibrary(requestParam[++i],
 								requestParam[++i], requestParam[++i],
-								requestParam[++i]);
+								requestParam[++i],requestParam[++i]);
 					} catch (LibraryException e) {
 						response = failureResponse;
 					}
@@ -196,6 +197,8 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 		}
 		// mgrone.exit();
 	}
+
+	
 	
 }
 

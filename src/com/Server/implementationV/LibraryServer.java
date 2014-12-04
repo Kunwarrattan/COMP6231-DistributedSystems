@@ -17,31 +17,28 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import javax.xml.ws.Endpoint;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import IdlFiles.LibraryException;
+import IdlFiles.LibraryManagementInterfaceOperations;
+
 import com.assignment1.abstractclass.CommunicationFacilitator;
-//import com.Server.implementationV.Configuration;
 import com.assignment1.config.Configuration;
 import com.assignment1.exception.CommunicationException;
-import com.assignment1.exception.LibraryException;
 import com.assignment1.model.Book;
 import com.assignment1.model.StudentAccount;
 import com.assignment1.utils.CommunicationManager;
 import com.assignment1.utils.FileOps;
-import com.assignment1.utils.UDPManager;
+import com.assignment1.utils.PortClass;
 
 /**
- * This class is used to declare the server objects and serves the client
- * request. When the client request comes, the class will serve the request
- * 
  * @author VenkateshSR
  * 
  */
 
-public class LibraryServer extends CommunicationFacilitator implements LibraryManagementInterface,Runnable {
+public class LibraryServer extends CommunicationFacilitator implements
+LibraryManagementInterfaceOperations, Runnable {
 	private HashMap<String, Book> bookMap = null;
 	private HashMap<Character, HashMap<String, StudentAccount>> outhaccount = null;
 	private String uname;
@@ -51,7 +48,8 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 	private int nonReturnersport = 0;
 	private int portForInterLibraryCommunication = 0;
 	private boolean serverStop = true;
-	private UDPManager managerUDP = null;
+	private PortClass portclass = null;
+	private String replicaName = "";
 
 	/**
 	 * Start
@@ -84,9 +82,10 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 	//public LibraryServer(String name, 
 			//int interlibPort) throws Exception {
 	public LibraryServer(String name, int portForGetNonReturners,
-			int interlibPort) throws Exception {
-		super();
+			int interlibPort, String replicaName) throws Exception {
+		super(name);
 		this.uname = name;
+		this.replicaName = replicaName;
 		// this.portForGetNonReturners = portForGetNonReturners;
 		this.portForInterLibraryCommunication = interlibPort;
 		FileOps.initServer(name);
@@ -131,16 +130,10 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 		while (iter.hasNext()) {
 			usersCopy.putAll(iter.next());
 		}
-		managerUDP = new UDPManager(this, true);
-		if(name.equals(Configuration.LIBRARY1))
-			mgrone = new CommunicationManager(Configuration.UDP_PORT_1,
-					this);
-		else if(name.equals(Configuration.LIBRARY2))
-			mgrone = new CommunicationManager(Configuration.UDP_PORT_2,
-					this);
-		else if(name.equals(Configuration.LIBRARY3))
-			mgrone = new CommunicationManager(Configuration.UDP_PORT_3,
-					this);
+		//Port class instead of UDPManager
+		portclass = new PortClass(this, true);
+		mgrone = new CommunicationManager(Configuration.MULTICAST_PORT, Configuration.RECIEVER_ROLE,
+				this);
 		/*
 		 * thread = new Thread(this); thread.start();
 		 */}
@@ -171,20 +164,8 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 	 * 
 	 */
 	public void exit() {
-		String bookInfoFile = "//" + uname + "//"
-				+ "bookDetails.ser";
-		String acctInfoFile = "//" + uname + "//"
-				+ "studentAccount.ser";
-		try {
-			synchronized (outhaccount) {
-				FileOps.serializeObjToFile(acctInfoFile, outhaccount);
-			}
-			synchronized (bookMap) {
-				FileOps.serializeObjToFile(bookInfoFile, bookMap);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		this.stopServer = false;
+		this.mgrone.exit();
 	}
 
 	/**
@@ -384,7 +365,7 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 	}
 
 	public void reserveBook(String userName, String password, String bookName,
-			String authorName) throws LibraryException {
+			String authorName, String inst) throws LibraryException {
 		if (StringUtils.isBlank(userName) || StringUtils.isBlank(password)
 				|| StringUtils.isBlank(bookName)
 				|| StringUtils.isBlank(authorName)) {
@@ -513,9 +494,9 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 	}
 
 	public void reserveInterLibrary(String userName, String password,
-			String bookName, String authorName) throws LibraryException {
+			String bookName, String authorName, String inst) throws LibraryException {
 		try {
-			reserveBook(userName, password, bookName, authorName);
+			reserveBook(userName, password, bookName, authorName,inst);
 		} catch (LibraryException exp) {
 			if (exp.code == Configuration.BOOK_NOT_FOUND) {
 				if (portForInterLibraryCommunication != Configuration.UDP_PORT_1
@@ -653,33 +634,28 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
-		try {
-//			LibraryServer server1 = new LibraryServer(Configuration.serverfirst,
-//					0, Configuration.UDP_PORT_1);
-//			LibraryServer server2 = new LibraryServer(Configuration.serversecond,
-//					0, Configuration.UDP_PORT_2);
-//			LibraryServer server3 = new LibraryServer(Configuration.serverthird,
-//					0, Configuration.UDP_PORT_3);
-			LibraryServer server1 = new LibraryServer(Configuration.LIBRARY1,0,
-					 Configuration.UDP_PORT_1);
-			LibraryServer server2 = new LibraryServer(Configuration.LIBRARY2,0,
-					 Configuration.UDP_PORT_2);
-			LibraryServer server3 = new LibraryServer(Configuration.LIBRARY3,0,
-					 Configuration.UDP_PORT_3);
-			server1.setDuration("venkateshsr", "3D Math", Configuration.DEFAULT_NO_OF_DAYS+4);
-			server1.setDuration("charlie", "3D Math", Configuration.DEFAULT_NO_OF_DAYS+6);
-			server1.loadBooks();
-			server2.loadBooks();
-			server3.loadBooks();
-			Endpoint.publish(Configuration.HOSTNAME+server1.uname, server1);
-			Endpoint.publish(Configuration.HOSTNAME+server2.uname, server2);
-			Endpoint.publish(Configuration.HOSTNAME+server3.uname, server3);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void main(String[] args) throws Exception {
+//		try {
+//
+//			LibraryServer server1 = new LibraryServer(Configuration.LIBRARY1,0,
+//					 Configuration.UDP_PORT_1);
+//			LibraryServer server2 = new LibraryServer(Configuration.LIBRARY2,0,
+//					 Configuration.UDP_PORT_2);
+//			LibraryServer server3 = new LibraryServer(Configuration.LIBRARY3,0,
+//					 Configuration.UDP_PORT_3);
+//			server1.setDuration("venkateshsr", "3D Math", Configuration.DEFAULT_NO_OF_DAYS+4);
+//			server1.setDuration("charlie", "3D Math", Configuration.DEFAULT_NO_OF_DAYS+6);
+//			server1.loadBooks();
+//			server2.loadBooks();
+//			server3.loadBooks();
+//			Endpoint.publish(Configuration.HOSTNAME+server1.uname, server1);
+//			Endpoint.publish(Configuration.HOSTNAME+server2.uname, server2);
+//			Endpoint.publish(Configuration.HOSTNAME+server3.uname, server3);
+//			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	/**
 	 * used to populate data in the server instances...
@@ -753,93 +729,78 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		while(stopServer){
+		while (stopServer) {
 			String data = this.popFirstVal();
-			String value;
-			//Request will be of form timestamp
-			
-			//data = timestamp+COMMUNICATION_SEPERATOR+request+COMMUNICATION_SEPERATOR+hostname+COMMUNICATION_SEPERATOR+port;(its only understanding- not code)
-			if(data != null){
+			if (data != null) {
 				String[] arry;
 				arry = data.split(Configuration.COMMUNICATION_SEPERATOR);
 				String timestamp = arry[0];
 				String request = arry[1];
 				String hostname = arry[2];
 				int port = Integer.parseInt(arry[3]);
-				value = timestamp + Configuration.UDP_DELIMITER
+				String response = timestamp + Configuration.UDP_DELIMITER + this.replicaName+Configuration.UDP_DELIMITER
 						+ Configuration.SUCCESS_STRING;
-				//It will check whether it has 8 parameters in create account after spliting
-				if(request.contains(Configuration.CREATE_ACCOUNT)){
+				String failureResponse = timestamp + Configuration.UDP_DELIMITER + this.replicaName+ Configuration.UDP_DELIMITER
+						+ Configuration.FAILURE_STRING;
+				if (request.contains(Configuration.CREATE_ACCOUNT)) {
 					String requestParam[] = request
 							.split(Configuration.UDP_DELIMITER);
 					int i = 0;
-					try{
-						createAccount(requestParam[++i], requestParam[++i], 
-								requestParam[++i], requestParam[++i], 
-								requestParam[++i], requestParam[++i], 
-								requestParam[++i]);
+					try {
+						createAccount(requestParam[i++], requestParam[i++],
+								requestParam[i++], requestParam[i++],
+								requestParam[i++], requestParam[i++],
+								requestParam[i++]);
+					} catch (LibraryException e) {
+						response = failureResponse;
 					}
-					catch(LibraryException e){
-						value = timestamp + Configuration.UDP_DELIMITER
-								+ Configuration.FAILURE_STRING;
-					}
-				}else if(request.contains(Configuration.RESERVE_BOOK))
-				{
+
+				} else if (request.contains(Configuration.RESERVE_BOOK)) {
 					String requestParam[] = request
 							.split(Configuration.UDP_DELIMITER);
 					int i = 0;
-					try{
-						
-						reserveBook(requestParam[++i], 
-								requestParam[++i], 
-								requestParam[++i], 
-								requestParam[++i]);
+					try {
+						reserveBook(requestParam[i++], requestParam[i++],
+								requestParam[i++], requestParam[i++],requestParam[i++]);
+
+					} catch (LibraryException e) {
+						response =failureResponse;
 					}
-					catch(LibraryException e){
-						value = timestamp + Configuration.UDP_DELIMITER
-								+ Configuration.FAILURE_STRING;
-					}
-				}else if(request.contains(Configuration.RESERVE_INTER_LIBRARY))
-						{
-							String requestParam[] = request
-									.split(Configuration.UDP_DELIMITER);
-							int i = 0;
-							try{
-								reserveInterLibrary(requestParam[++i], 
-										requestParam[++i], 
-										requestParam[++i], 
-										requestParam[++i]);
-							}
-							catch(LibraryException e){
-								value = timestamp + Configuration.UDP_DELIMITER
-										+ Configuration.FAILURE_STRING;
-					}
-				}else if(request.contains(Configuration.GET_NON_RETUNERS))
-				{
+				} else if (request
+						.contains(Configuration.RESERVE_INTER_LIBRARY)) {
 					String requestParam[] = request
 							.split(Configuration.UDP_DELIMITER);
 					int i = 0;
-					try{
-						value += Configuration.UDP_DELIMITER
-								+ getNonRetuners(requestParam[++i],
-										requestParam[++i], requestParam[++i],
-										++i);
-					}catch(LibraryException e){
-						value = timestamp + Configuration.UDP_DELIMITER
-								+ Configuration.FAILURE_STRING;
+					try {
+						reserveInterLibrary(requestParam[i++],
+								requestParam[i++], requestParam[i++],
+								requestParam[i++],requestParam[i++]);
+					} catch (LibraryException e) {
+						response = failureResponse;
+					}
+				} else if (request.contains(Configuration.GET_NON_RETUNERS)) {
+					String requestParam[] = request
+							.split(Configuration.UDP_DELIMITER);
+					int i = 0;
+					try {
+						response += Configuration.UDP_DELIMITER
+								+ getNonRetuners(requestParam[i++],
+										requestParam[i++], requestParam[i++],
+										Integer.parseInt(requestParam[i++]));
+					} catch (LibraryException e) {
+						response = failureResponse;
+					}
+				}
+				try {
+					mgrone.send(response, hostname, port);
+				} catch (CommunicationException | IOException
+						| InterruptedException | ExecutionException
+						| TimeoutException e) {
+					e.printStackTrace();
 				}
 			}
-				
-					try {
-						mgrone.send(value, hostname, port);
-					} catch (CommunicationException | IOException
-							| InterruptedException | ExecutionException |TimeoutException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				
-			}
 		}
+		// mgrone.exit();
 	}
 }
 

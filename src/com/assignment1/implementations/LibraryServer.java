@@ -15,11 +15,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import IdlFiles.LibraryException;
-import IdlFiles.LibraryManagementInterfacePOA;
+import IdlFiles.LibraryManagementInterfaceOperations;
 
 import com.assignment1.abstractclass.CommunicationFacilitator;
 import com.assignment1.config.Configuration;
@@ -29,6 +26,8 @@ import com.assignment1.model.StudentAccount;
 import com.assignment1.utils.CommunicationManager;
 import com.assignment1.utils.FileOps;
 import com.assignment1.utils.UDPManager;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * This class represents the library server and holds all the information
@@ -38,8 +37,8 @@ import com.assignment1.utils.UDPManager;
  * 
  */
 
-public class LibraryServer extends LibraryManagementInterfacePOA implements
-	Runnable {
+public class LibraryServer implements
+	LibraryManagementInterfaceOperations, Runnable {
 	private CommunicationFacilitator facilitator;
 	private HashMap<String, Book> bookMap = null;
 	private HashMap<Character, HashMap<String, StudentAccount>> accounts = null;
@@ -379,7 +378,7 @@ public class LibraryServer extends LibraryManagementInterfacePOA implements
 	 * 
 	 */
 	public void reserveBook(String userName, String password, String bookName,
-			String authorName) throws LibraryException {
+			String authorName, String inst) throws LibraryException {
 		if (StringUtils.isBlank(userName) || StringUtils.isBlank(password)
 				|| StringUtils.isBlank(bookName)
 				|| StringUtils.isBlank(authorName)) {
@@ -518,9 +517,9 @@ public class LibraryServer extends LibraryManagementInterfacePOA implements
 	 * instance.
 	 */
 	public void reserveInterLibrary(String userName, String password,
-			String bookName, String authorName) throws LibraryException {
+			String bookName, String authorName, String inst) throws LibraryException {
 		try {
-			reserveBook(userName, password, bookName, authorName);
+			reserveBook(userName, password, bookName, authorName,inst);
 		} catch (LibraryException exp) {
 			if (exp.code == Configuration.BOOK_NOT_FOUND) {
 				if (portForInterLibraryCommunication != Configuration.UDP_PORT_1
@@ -702,75 +701,26 @@ public class LibraryServer extends LibraryManagementInterfacePOA implements
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
-		try {
-			LibraryServer server1 = new LibraryServer(Configuration.LIBRARY1,
-					0, Configuration.UDP_PORT_1,Configuration.REPLICA1);
-			LibraryServer server2 = new LibraryServer(Configuration.LIBRARY2,
-					0, Configuration.UDP_PORT_2,Configuration.REPLICA1);
-			LibraryServer server3 = new LibraryServer(Configuration.LIBRARY3,
-					0, Configuration.UDP_PORT_3,Configuration.REPLICA1);
-			server1.setDuration("kaushik", "3D Math",
-					Configuration.DEFAULT_NO_OF_DAYS + 4);
-			server1.setDuration("charlie", "3D Math",
-					Configuration.DEFAULT_NO_OF_DAYS + 6);
-			server1.loadBooks();
-			server2.loadBooks();
-			server3.loadBooks();
-			/*
-			 * Registry r = LocateRegistry.createRegistry(Configuration.PORT);
-			 * ORB orb = ORB.init(args, null); POA rootPoa =
-			 * POAHelper.narrow(orb .resolve_initial_references("RootPOA"));
-			 * LibraryServer server1 = new LibraryServer(Configuration.LIBRARY1,
-			 * 0, Configuration.UDP_PORT_1); LibraryServer server2 = new
-			 * LibraryServer(Configuration.LIBRARY2, 0,
-			 * Configuration.UDP_PORT_2); LibraryServer server3 = new
-			 * LibraryServer(Configuration.LIBRARY3, 0,
-			 * Configuration.UDP_PORT_3); byte[] id1 =
-			 * rootPoa.activate_object(server1); byte[] id2 =
-			 * rootPoa.activate_object(server2); byte[] id3 =
-			 * rootPoa.activate_object(server3); server1.setDuration("kau1990",
-			 * "3D Math", Configuration.DEFAULT_NO_OF_DAYS+4);
-			 * server2.setDuration("harvey1990", "3D Math",
-			 * Configuration.DEFAULT_NO_OF_DAYS+10);
-			 * server1.setDuration("kun1990", "3D Math",
-			 * Configuration.DEFAULT_NO_OF_DAYS+2); org.omg.CORBA.Object obj =
-			 * rootPoa.id_to_reference(id1); org.omg.CORBA.Object obj1 =
-			 * rootPoa.id_to_reference(id2); org.omg.CORBA.Object obj2 =
-			 * rootPoa.id_to_reference(id3); String str1 =
-			 * orb.object_to_string(obj); String str2 =
-			 * orb.object_to_string(obj1); String str3 =
-			 * orb.object_to_string(obj2); FileUtils.writeStringToFile(new
-			 * File(".//" + Configuration.LIBRARY1 + "IOR.txt"), str1);
-			 * FileUtils.writeStringToFile(new File(".//" +
-			 * Configuration.LIBRARY2 + "IOR.txt"), str2);
-			 * FileUtils.writeStringToFile(new File(".//" +
-			 * Configuration.LIBRARY3 + "IOR.txt"), str3);
-			 * rootPoa.the_POAManager().activate(); orb.run();
-			 */
-			/*
-			 * LibraryServer server1 = new LibraryServer(Configuration.LIBRARY1,
-			 * Configuration.UDP_PORT_1); LibraryServer server2 = new
-			 * LibraryServer(Configuration.LIBRARY2, Configuration.UDP_PORT_2);
-			 * LibraryServer server3 = new LibraryServer(Configuration.LIBRARY3,
-			 * Configuration.UDP_PORT_3); server1.setDuration("Frankenstein",
-			 * "Cuda", Configuration.DEFAULT_NO_OF_DAYS + 2);
-			 * server3.setDuration("drwho900", "3D Math",
-			 * Configuration.DEFAULT_NO_OF_DAYS + 2);
-			 * server2.setDuration("PatrickStar", "Opencl",
-			 * Configuration.DEFAULT_NO_OF_DAYS + 2);
-			 * 
-			 * r.rebind(Configuration.LIBRARY1, server1);
-			 * r.rebind(Configuration.LIBRARY2, server2);
-			 * r.rebind(Configuration.LIBRARY3, server3);
-			 */
-			// server1.thread.join();
-			// server2.thread.join();
-			// server3.thread.join();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void main(String[] args) throws Exception {
+//		try {
+//			LibraryServer server1 = new LibraryServer(Configuration.LIBRARY1,
+//					0, Configuration.UDP_PORT_1,Configuration.REPLICA1);
+//			LibraryServer server2 = new LibraryServer(Configuration.LIBRARY2,
+//					0, Configuration.UDP_PORT_2,Configuration.REPLICA1);
+//			LibraryServer server3 = new LibraryServer(Configuration.LIBRARY3,
+//					0, Configuration.UDP_PORT_3,Configuration.REPLICA1);
+//			server1.setDuration("kaushik", "3D Math",
+//					Configuration.DEFAULT_NO_OF_DAYS + 4);
+//			server1.setDuration("charlie", "3D Math",
+//					Configuration.DEFAULT_NO_OF_DAYS + 6);
+//			server1.loadBooks();
+//			server2.loadBooks();
+//			server3.loadBooks();
+//		
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	/**
 	 * used to populate data in the server instances...
@@ -863,10 +813,10 @@ public class LibraryServer extends LibraryManagementInterfacePOA implements
 							.split(Configuration.UDP_DELIMITER);
 					int i = 0;
 					try {
-						createAccount(requestParam[++i], requestParam[++i],
-								requestParam[++i], requestParam[++i],
-								requestParam[++i], requestParam[++i],
-								requestParam[++i]);
+						createAccount(requestParam[i++], requestParam[i++],
+								requestParam[i++], requestParam[i++],
+								requestParam[i++], requestParam[i++],
+								requestParam[i++]);
 					} catch (LibraryException e) {
 						response = failureResponse;
 					}
@@ -876,8 +826,8 @@ public class LibraryServer extends LibraryManagementInterfacePOA implements
 							.split(Configuration.UDP_DELIMITER);
 					int i = 0;
 					try {
-						reserveBook(requestParam[++i], requestParam[++i],
-								requestParam[++i], requestParam[++i]);
+						reserveBook(requestParam[i++], requestParam[i++],
+								requestParam[i++], requestParam[i++],requestParam[i++]);
 
 					} catch (LibraryException e) {
 						response =failureResponse;
@@ -888,9 +838,9 @@ public class LibraryServer extends LibraryManagementInterfacePOA implements
 							.split(Configuration.UDP_DELIMITER);
 					int i = 0;
 					try {
-						reserveInterLibrary(requestParam[++i],
-								requestParam[++i], requestParam[++i],
-								requestParam[++i]);
+						reserveInterLibrary(requestParam[i++],
+								requestParam[i++], requestParam[i++],
+								requestParam[i++],requestParam[i++]);
 					} catch (LibraryException e) {
 						response = failureResponse;
 					}
@@ -900,9 +850,9 @@ public class LibraryServer extends LibraryManagementInterfacePOA implements
 					int i = 0;
 					try {
 						response += Configuration.UDP_DELIMITER
-								+ getNonRetuners(requestParam[++i],
-										requestParam[++i], requestParam[++i],
-										Integer.parseInt(requestParam[++i]));
+								+ getNonRetuners(requestParam[i++],
+										requestParam[i++], requestParam[i++],
+										Integer.parseInt(requestParam[i++]));
 					} catch (LibraryException e) {
 						response = failureResponse;
 					}

@@ -317,7 +317,7 @@ public class ServerFunction extends CommunicationFacilitator
 	 * 
 	 * */
 
-	public String getNonreturners(String AdminUsername, String AdminPassword,String instname, String numOfDays) {
+	public String getNonreturners(String AdminUsername, String AdminPassword,String instname, int numOfDays) {
 		LoggerTask logtask = null;
 		String str = " ";
 					try {
@@ -333,7 +333,7 @@ public class ServerFunction extends CommunicationFacilitator
 				// if(idate.compareTo(ddate) > 0){
 						long lt = idate.getTime()-ddate.getTime();
 						long diffDays = lt / (1000 * 60 * 60 * 24);
-						if(diffDays >= Integer.parseInt(numOfDays)){
+						if(diffDays >= numOfDays){
 						System.out.println(diffDays);
 						System.out.println("Bookname = "+book1.BookName + " | Authorname = " +
 								 book1.AuthorName + " | Username = " + book1.Username + " | Issuedate = "

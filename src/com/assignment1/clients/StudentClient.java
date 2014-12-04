@@ -247,10 +247,10 @@ public class StudentClient {
 						LibraryManagementInterface server = getServerInstance(instName);
 						if (!isInterLibraryRequest)
 							server.reserveBook(userName, password, bookName,
-									authorName);
+									authorName,instName);
 						else
 							server.reserveInterLibrary(userName, password,
-									bookName, authorName);
+									bookName, authorName,instName);
 						System.out
 								.format("The book with name %s by %s is successfully reserved for the username %s",
 										bookName, authorName, userName);
