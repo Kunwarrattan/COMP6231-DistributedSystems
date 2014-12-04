@@ -78,9 +78,9 @@ public class Configuration {
 	public static final String REPLICA_START_CMD = "START";
 	public static final String REPLICA_SHUT_DOWN_CMD = "STOP";
 	public static final int RM_RECV_PORT = 5003;
-	public static String REPLICA_IP1 = "";
-	public static String REPLICA_IP2 = "";
-	public static String REPLICA_IP3 = "";
+	public static String REPLICA_IP1 = "localhost";
+	public static String REPLICA_IP2 = "localhost";
+	public static String REPLICA_IP3 = "localhost";
 	public static final String REPLICA_HEARTBEAT = "MY_HEARTBEAT";
 	public static final String HEART_BEAT_MONITOR = "HEART_BEAT_MONITOR";
 	public static final String RCV_MONITOR = "RCV_MONITOR";
@@ -95,6 +95,6 @@ public class Configuration {
 	public static final String  FRONTEND_RM_IP= "";
 	
 	public static final int DEAMON_RM_UDP_PORT = 0;
-	public static final String  DEAMON_RM_IP= "";
+	public static final String  DEAMON_RM_IP= "localhost";
 	
 }

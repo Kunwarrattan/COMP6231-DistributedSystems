@@ -17,8 +17,9 @@ public class DeamonClient extends CommunicationFacilitator {
 
 	Scanner in = new Scanner(System.in);
 
-	public DeamonClient() throws SocketException {
+	public DeamonClient() throws CommunicationException, IOException, InterruptedException, ExecutionException, TimeoutException {
 		mgrone = new CommunicationManager();
+		showMenu();
 	}
 
 	public void showMenu() throws CommunicationException, IOException,
@@ -165,5 +166,10 @@ public class DeamonClient extends CommunicationFacilitator {
 		mgrone.send(data, Configuration.DEAMON_RM_IP,
 				Configuration.RM_RECV_PORT);
 	}
+	
+	public static void main(String[] args) throws CommunicationException, IOException, InterruptedException, ExecutionException, TimeoutException{
+		DeamonClient dm = new DeamonClient();
+	}
+	
 
 }

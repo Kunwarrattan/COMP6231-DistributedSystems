@@ -102,7 +102,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 		synchronized (numberOfTimesReplicaHeartBeatMissed) {
 			Integer i = numberOfTimesReplicaHeartBeatMissed.get(ary[1]);
 			if(i == null){
-				addReplicaToSet(ary[i]);
+				addReplicaToSet(ary[1]);
 				numberOfTimesReplicaHeartBeatMissed.put(ary[1], 0);
 			}
 			else{
@@ -147,6 +147,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 	@Override
 	public void run() {
 		String name = Thread.currentThread().getName();
+		System.out.println("Replica Manager is running for" + name);
 		if (name.equals(Configuration.HEART_BEAT_MONITOR)) {
 			while (stopServer) {
 				try {
