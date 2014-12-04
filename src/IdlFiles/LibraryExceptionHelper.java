@@ -63,6 +63,7 @@ public class LibraryExceptionHelper
         return read( a.create_input_stream() );
     }
 
+
     //
     // Internal TypeCode value
     //

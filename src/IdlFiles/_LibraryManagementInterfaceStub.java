@@ -85,7 +85,7 @@ public class _LibraryManagementInterfaceStub extends org.omg.CORBA.portable.Obje
     /**
      * Operation reserveBook
      */
-    public void reserveBook(String userName, String password, String bookName, String authorName)
+    public void reserveBook(String userName, String password, String bookName, String authorName, String inst)
         throws IdlFiles.LibraryException
     {
         while(true)
@@ -100,6 +100,7 @@ public class _LibraryManagementInterfaceStub extends org.omg.CORBA.portable.Obje
                     _output.write_string(password);
                     _output.write_string(bookName);
                     _output.write_string(authorName);
+                    _output.write_string(inst);
                     _input = this._invoke(_output);
                     return;
                 }
@@ -130,7 +131,7 @@ public class _LibraryManagementInterfaceStub extends org.omg.CORBA.portable.Obje
                 IdlFiles.LibraryManagementInterfaceOperations _self = (IdlFiles.LibraryManagementInterfaceOperations) _so.servant;
                 try
                 {
-                    _self.reserveBook( userName,  password,  bookName,  authorName);
+                    _self.reserveBook( userName,  password,  bookName,  authorName,  inst);
                     return;
                 }
                 finally
@@ -144,7 +145,7 @@ public class _LibraryManagementInterfaceStub extends org.omg.CORBA.portable.Obje
     /**
      * Operation reserveInterLibrary
      */
-    public void reserveInterLibrary(String userName, String password, String bookName, String authorName)
+    public void reserveInterLibrary(String userName, String password, String bookName, String authorName, String inst)
         throws IdlFiles.LibraryException
     {
         while(true)
@@ -159,6 +160,7 @@ public class _LibraryManagementInterfaceStub extends org.omg.CORBA.portable.Obje
                     _output.write_string(password);
                     _output.write_string(bookName);
                     _output.write_string(authorName);
+                    _output.write_string(inst);
                     _input = this._invoke(_output);
                     return;
                 }
@@ -189,7 +191,7 @@ public class _LibraryManagementInterfaceStub extends org.omg.CORBA.portable.Obje
                 IdlFiles.LibraryManagementInterfaceOperations _self = (IdlFiles.LibraryManagementInterfaceOperations) _so.servant;
                 try
                 {
-                    _self.reserveInterLibrary( userName,  password,  bookName,  authorName);
+                    _self.reserveInterLibrary( userName,  password,  bookName,  authorName,  inst);
                     return;
                 }
                 finally

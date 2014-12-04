@@ -84,10 +84,11 @@ public abstract class LibraryManagementInterfacePOA extends org.omg.PortableServ
         String arg1_in = _is.read_string();
         String arg2_in = _is.read_string();
         String arg3_in = _is.read_string();
+        String arg4_in = _is.read_string();
 
         try
         {
-            reserveBook(arg0_in, arg1_in, arg2_in, arg3_in);
+            reserveBook(arg0_in, arg1_in, arg2_in, arg3_in, arg4_in);
 
             _output = handler.createReply();
 
@@ -108,10 +109,11 @@ public abstract class LibraryManagementInterfacePOA extends org.omg.PortableServ
         String arg1_in = _is.read_string();
         String arg2_in = _is.read_string();
         String arg3_in = _is.read_string();
+        String arg4_in = _is.read_string();
 
         try
         {
-            reserveInterLibrary(arg0_in, arg1_in, arg2_in, arg3_in);
+            reserveInterLibrary(arg0_in, arg1_in, arg2_in, arg3_in, arg4_in);
 
             _output = handler.createReply();
 

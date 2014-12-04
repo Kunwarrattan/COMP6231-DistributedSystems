@@ -16,13 +16,13 @@ public interface LibraryManagementInterfaceOperations
     /**
      * Operation reserveBook
      */
-    public void reserveBook(String userName, String password, String bookName, String authorName)
+    public void reserveBook(String userName, String password, String bookName, String authorName, String inst)
         throws IdlFiles.LibraryException;
 
     /**
      * Operation reserveInterLibrary
      */
-    public void reserveInterLibrary(String userName, String password, String bookName, String authorName)
+    public void reserveInterLibrary(String userName, String password, String bookName, String authorName, String inst)
         throws IdlFiles.LibraryException;
 
     /**

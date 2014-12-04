@@ -51,8 +51,9 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 					+ Configuration.UDP_DELIMITER + userName
 					+ Configuration.UDP_DELIMITER + password
 					+ Configuration.UDP_DELIMITER + institutionName;
+					
 			String timeStamp = MGR.send(data, Configuration.SEQUENCER_IP,
-					Configuration.UDP_FRONTEND_PORT_IMP);
+					Configuration.SEQUENCER_RECV_PORT);
 			String responseSet = getResponseSet(timeStamp);
 			HashMap<String, Boolean> responseMap = new HashMap<String, Boolean>();
 			if (responseSet == null) {
@@ -94,16 +95,17 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 
 	@Override
 	public void reserveBook(String userName, String password, String bookName,
-			String authorName) throws LibraryException {
+			String authorName, String institutionName) throws LibraryException {
 		try {
 			String data = Configuration.RESERVE_BOOK
 					+ Configuration.UDP_DELIMITER + userName
 					+ Configuration.UDP_DELIMITER + password
 					+ Configuration.UDP_DELIMITER + bookName
-					+ Configuration.UDP_DELIMITER + authorName;
+					+ Configuration.UDP_DELIMITER + authorName
+					+ Configuration.UDP_DELIMITER + institutionName;
 			
 			String timeStamp = MGR.send(data, Configuration.SEQUENCER_IP,
-					Configuration.UDP_FRONTEND_PORT_IMP);
+					Configuration.SEQUENCER_RECV_PORT);
 			String responseSet = getResponseSet(timeStamp);
 			HashMap<String, Boolean> responseMap = new HashMap<String, Boolean>();
 			if (responseSet == null) {
@@ -151,17 +153,18 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 
 	@Override
 	public void reserveInterLibrary(String userName, String password,
-			String bookName, String authorName) throws LibraryException {
+			String bookName, String authorName, String institutionName) throws LibraryException {
 		try {
 			String data = Configuration.RESERVE_INTER_LIBRARY
 
 			+ Configuration.UDP_DELIMITER + userName
 					+ Configuration.UDP_DELIMITER + password
 					+ Configuration.UDP_DELIMITER + bookName
-					+ Configuration.UDP_DELIMITER + authorName;
+					+ Configuration.UDP_DELIMITER + authorName
+					+ Configuration.UDP_DELIMITER + institutionName;
 
 			String timeStamp = MGR.send(data, Configuration.SEQUENCER_IP,
-					Configuration.UDP_FRONTEND_PORT_IMP);
+					Configuration.SEQUENCER_RECV_PORT);
 			String responseSet = getResponseSet(timeStamp);
 			HashMap<String, Boolean> responseMap = new HashMap<String, Boolean>();
 			if (responseSet == null) {
@@ -178,14 +181,19 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 				if(responseMap.get(Configuration.REPLICA1).equals(responseMap.get(Configuration.REPLICA3))){
 					return ;
 				}else{
-					//call RM for 3 is diff
+					String flag = Configuration.REPLICA_SHUT_DOWN_CMD
+								 	+Configuration.REPLICA3;
+					MGR.send(flag, Configuration.DEAMON_RM_IP, Configuration.RM_RECV_PORT);
 				}
 			}else if(responseMap.get(Configuration.REPLICA1).equals(responseMap.get(Configuration.REPLICA3))){
-				
-					//call RM 2 is diff
+				String flag = Configuration.REPLICA_SHUT_DOWN_CMD
+									+Configuration.REPLICA2;
+				MGR.send(flag, Configuration.DEAMON_RM_IP, Configuration.RM_RECV_PORT);
 				}
 			else if(responseMap.get(Configuration.REPLICA2).equals(responseMap.get(Configuration.REPLICA3))){
-				//1 is diff
+				String flag = Configuration.REPLICA_SHUT_DOWN_CMD
+									+Configuration.REPLICA1;
+				MGR.send(flag, Configuration.DEAMON_RM_IP, Configuration.RM_RECV_PORT);
 			}
 			
 		} catch (CommunicationException | IOException | InterruptedException
@@ -206,7 +214,7 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 					+ Configuration.UDP_DELIMITER + institutionName
 					+ Configuration.UDP_DELIMITER + days;
 			String timeStamp = MGR.send(data, Configuration.SEQUENCER_IP,
-					Configuration.UDP_FRONTEND_PORT_IMP);
+					Configuration.SEQUENCER_RECV_PORT);
 			String responseSet = getResponseSet(timeStamp);
 			HashMap<String, String> responseMap = new HashMap<String, String>();
 			if (responseSet == null) {
@@ -221,7 +229,7 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 			
 			if( responseMap.get(Configuration.REPLICA1).equals(responseMap.get(Configuration.REPLICA2))){
 				if(responseMap.get(Configuration.REPLICA1).equals(responseMap.get(Configuration.REPLICA3))){
-					return ;
+					return "";
 				}else{
 					String flag = Configuration.REPLICA_SHUT_DOWN_CMD
 								 	+Configuration.REPLICA3;
