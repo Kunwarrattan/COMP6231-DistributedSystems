@@ -49,6 +49,14 @@ public class ClientInterface extends CommunicationFacilitator implements
 			mgrone = new CommunicationManager(
 					Configuration.REPLICA_INTERFACE_PORT1, this);
 		}
+		if (name.equals(Configuration.REPLICA2)) {
+			mgrone = new CommunicationManager(
+					Configuration.REPLICA_INTERFACE_PORT2, this);
+		}
+		if (name.equals(Configuration.REPLICA3)) {
+			mgrone = new CommunicationManager(
+					Configuration.REPLICA_INTERFACE_PORT3, this);
+		}
 		Thread thread1 = new Thread(this, Configuration.HEART_BEAT_MONITOR);
 		Thread thread2 = new Thread(this, Configuration.RCV_MONITOR);
 		thread1.start();
@@ -62,91 +70,15 @@ public class ClientInterface extends CommunicationFacilitator implements
 	 */
 	// Do for all 3 replicas
 	public static void main(String[] args) throws Exception {
-		
-		ClientInterface instance = new ClientInterface(Configuration.REPLICA1);
+	
+		ClientInterface instance1 = new ClientInterface(Configuration.REPLICA1);
+		ClientInterface instance2 = new ClientInterface(Configuration.REPLICA2);
+		ClientInterface instance3 = new ClientInterface(Configuration.REPLICA3);
 		ReplicaManager mgr = new ReplicaManager();
 
 	}
 
-	// if (instance.name.equals(Configuration.REPLICA1))
-	// {
-	//
-	// Sequencer seq = new Sequencer();
-	// /* */
-	// }
-	//
-	// else if (instance.name.equals(Configuration.REPLICA2))
-	// {
-	// /* instance.concordia = new
-	// com.Server.implementationK.LibraryServer(Configuration.LIBRARY1, 0,
-	// Configuration.UDP_PORT_1, Configuration.REPLICA1);
-	// instance.mcgill = new
-	// com.Server.implementationK.LibraryServer(Configuration.LIBRARY2, 0,
-	// Configuration.UDP_PORT_2, Configuration.REPLICA2);
-	// instance.vanier = new
-	// com.Server.implementationK.LibraryServer(Configuration.LIBRARY3, 0,
-	// Configuration.UDP_PORT_3, Configuration.REPLICA3);*/
-	// }
-	//
-	// else if (instance.name.equals(Configuration.REPLICA3)) {
-	// /* instance.concordia = new
-	// com.Server.implementationV.LibraryServer(Configuration.LIBRARY1, 0,
-	// Configuration.UDP_PORT_1, Configuration.REPLICA1);
-	// instance.mcgill = new
-	// com.Server.implementationV.LibraryServer(Configuration.LIBRARY2, 0,
-	// Configuration.UDP_PORT_2, Configuration.REPLICA2);
-	// instance.vanier = new
-	// com.Server.implementationV.LibraryServer(Configuration.LIBRARY3, 0,
-	// Configuration.UDP_PORT_3, Configuration.REPLICA3);*/
-	// }
-
-	// private void startReplica(String dataRecieved)
-	// throws CommunicationException, IOException, InterruptedException,
-	// ExecutionException, TimeoutException {
-	// // expected string Configuration.REPLICA_START_CMD +
-	// // Configuration.UDP_DELIMITER + Configuration.REPLICA1 ;
-	// String ary[] = dataRecieved.split(Configuration.UDP_DELIMITER);
-	// startReplicaCore(ary[1]);
-	// }
-	//
-	// private void startReplicaCore(String replicaName)
-	// throws CommunicationException, IOException, InterruptedException,
-	// ExecutionException, TimeoutException {
-	// String data = Configuration.REPLICA_START_CMD;
-	//
-	// if (Configuration.REPLICA1.equals(replicaName)) {
-	//
-	// mgrone.send(data, Configuration.REPLICA_IP1,
-	// Configuration.REPLICA_INTERFACE_PORT1);
-	// addReplicaToSet(Configuration.REPLICA1);
-	//
-	// }
-	//
-	// else if (Configuration.REPLICA2.equals(replicaName)) {
-	//
-	// mgrone.send(data, Configuration.REPLICA_IP2,
-	// Configuration.REPLICA_INTERFACE_PORT2);
-	// addReplicaToSet(Configuration.REPLICA2);
-	//
-	// }
-	//
-	// else if (Configuration.REPLICA3.equals(replicaName)) {
-	//
-	// mgrone.send(data, Configuration.REPLICA_IP3,
-	// Configuration.REPLICA_INTERFACE_PORT3);
-	// addReplicaToSet(Configuration.REPLICA3);
-	//
-	// }
-	// }
-	//
-	// public void addReplicaToSet(String replicaName) {
-	//
-	// synchronized (activeReplicas) {
-	// activeReplicas.add(replicaName);
-	// }
-	//
-	// }
-	//
+	
 	private void sendNotificaton() throws CommunicationException, IOException,
 			InterruptedException, ExecutionException, TimeoutException {
 		
@@ -154,18 +86,21 @@ public class ClientInterface extends CommunicationFacilitator implements
 		if (this.name.equals(Configuration.REPLICA1)) {
 			expected = Configuration.REPLICA_HEARTBEAT
 					+ Configuration.UDP_DELIMITER + Configuration.REPLICA1;
+			System.out.println("Sending notification for "  +  Configuration.REPLICA1);
 			mgrone.send(expected, Configuration.DEAMON_RM_IP,
 					Configuration.RM_RECV_PORT);
 
 		} else if (this.name.equals(Configuration.REPLICA2)) {
 			expected = Configuration.REPLICA_HEARTBEAT
-					+ Configuration.UDP_DELIMITER + Configuration.REPLICA1;
+					+ Configuration.UDP_DELIMITER + Configuration.REPLICA2;
+			System.out.println("Sending notification for "  +  Configuration.REPLICA2);
 			mgrone.send(expected, Configuration.DEAMON_RM_IP,
 					Configuration.RM_RECV_PORT);
 
 		} else if (this.name.equals(Configuration.REPLICA3)) {
 			expected = Configuration.REPLICA_HEARTBEAT
-					+ Configuration.UDP_DELIMITER + Configuration.REPLICA1;
+					+ Configuration.UDP_DELIMITER + Configuration.REPLICA3;
+			System.out.println("Sending notification for "  +  Configuration.REPLICA3);
 			mgrone.send(expected, Configuration.DEAMON_RM_IP,
 					Configuration.RM_RECV_PORT);
 		}
@@ -176,8 +111,8 @@ public class ClientInterface extends CommunicationFacilitator implements
 	private void recieveNotificationFromReplica(String notification) {
 		// expected string Configuration.REPLICA_HEARTBEAT +
 		// Configuration.UDP_DELIMITER + Configuration.REPLICA1 ;
+		
 		String ary[] = notification.split(Configuration.UDP_DELIMITER);
-
 		synchronized (numberOfTimesReplicaHeartBeatMissed) {
 			Integer i = numberOfTimesReplicaHeartBeatMissed.get(ary[1]);
 			if (i > 0) {
@@ -230,10 +165,22 @@ public class ClientInterface extends CommunicationFacilitator implements
 								}
 
 							} else if (this.name.equals(Configuration.REPLICA2)) {
-								libserverkunwar.exit();
+								if (concordia != null) {
+									concordia.exit();
+								} else if (mcgill != null) {
+									mcgill.exit();
+								} else if (vanier != null) {
+									vanier.exit();
+								}
 
 							} else if (this.name.equals(Configuration.REPLICA3)) {
-								libserverVenkatesh.exit();
+								if (concordia != null) {
+									concordia.exit();
+								} else if (mcgill != null) {
+									mcgill.exit();
+								} else if (vanier != null) {
+									vanier.exit();
+								}
 
 							}
 
@@ -262,6 +209,13 @@ public class ClientInterface extends CommunicationFacilitator implements
 										Configuration.REPLICA3);
 
 							} else if (name.equals(Configuration.REPLICA2)) {
+								if (concordia != null) {
+									concordia.exit();
+								} else if (mcgill != null) {
+									mcgill.exit();
+								} else if (vanier != null) {
+									vanier.exit();
+								}
 								concordia = new com.Server.implementationK.LibraryServer(
 										Configuration.LIBRARY1, 0,
 										Configuration.K_UDP_PORT_1,
@@ -276,6 +230,13 @@ public class ClientInterface extends CommunicationFacilitator implements
 										Configuration.REPLICA3);
 
 							} else if (name.equals(Configuration.REPLICA3)) {
+								if (concordia != null) {
+									concordia.exit();
+								} else if (mcgill != null) {
+									mcgill.exit();
+								} else if (vanier != null) {
+									vanier.exit();
+								}
 								concordia = new com.Server.implementationV.LibraryServer(
 										Configuration.LIBRARY1, 0,
 										Configuration.V_UDP_PORT_1,

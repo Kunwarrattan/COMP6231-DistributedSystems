@@ -83,7 +83,9 @@ LibraryManagementInterfaceOperations, Runnable {
 			//int interlibPort) throws Exception {
 	public LibraryServer(String name, int portForGetNonReturners,
 			int interlibPort, String replicaName) throws Exception {
+		
 		super(name);
+		System.out.println("Library Server Started" + name + " Replica = " + replicaName + "Port" + portForGetNonReturners);
 		this.uname = name;
 		this.replicaName = replicaName;
 		// this.portForGetNonReturners = portForGetNonReturners;

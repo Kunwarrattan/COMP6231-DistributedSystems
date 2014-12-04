@@ -28,7 +28,7 @@ public class LibraryServer extends CommunicationFacilitator implements LibraryMa
 	private CommunicationManager mgrone;
 	public volatile boolean stopServer = true;
 	public LibraryServer(String library1, int i, int udpPort1, String replica1) throws FileNotFoundException, SocketException {
-		
+		System.out.println("Library Server Started" + library1 + " replica1 = " + udpPort1 + "Port" + udpPort1);
 		this.replicaName = replica1;
 		this.server = library1;
 		this.port = udpPort1;

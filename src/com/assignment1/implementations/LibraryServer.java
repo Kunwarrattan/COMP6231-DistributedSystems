@@ -67,6 +67,7 @@ public class LibraryServer implements
 	 */
 	public LibraryServer(String name, int portForGetNonReturners,
 			int portForInterLibraryCommunication,String replicaName) throws Exception {
+		System.out.println("Library Server Started" + name + " Replica = " + replicaName + "Port" + portForGetNonReturners);
 		this.name = name;
 		this.facilitator = new CommunicationFacilitator(name);
 		this.replicaName = replicaName;
