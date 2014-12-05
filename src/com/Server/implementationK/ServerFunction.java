@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import com.assignment1.abstractclass.CommunicationFacilitator;
+import com.assignment1.config.Configuration;
 import com.assignment1.utils.CommunicationManager;
 //import com.assignment1.config.Configuration;
 /**
@@ -129,13 +130,9 @@ public class ServerFunction extends CommunicationFacilitator
 	 */
 	public String createAccount(String username, String password,String firstname, String lastname, 
 			String phonenumber,String email, String educationalinstitute) {
-		try {
-
 			Student student = new Student();
-
-			LoggerTask logtask = null;
-			logtask = new LoggerTask();
-
+//			LoggerTask logtask = null;
+//			logtask = new LoggerTask();
 			student.firstname = firstname;
 			student.lastname = lastname;
 			student.email = email;
@@ -143,17 +140,12 @@ public class ServerFunction extends CommunicationFacilitator
 			student.Password = password;
 			student.phoneNumber = phonenumber;
 			student.EducationalInstitute = educationalinstitute;
-
-			String path = "../LibraryServer/src/com/Server/Pack/userCreated/"+ student.username + ".txt";
-
+			//String path = Configuration.CURRENT_DIR+"//file//"+ student.username + ".txt";
 			char element = student.username.toLowerCase().charAt(0);
-
 			// .....if condition returns if username and key doesn't exists
-			
 			if (StudentAccount.get(element) == null) {
 					HashMap<String, Student> studRecord = new HashMap<String, Student>();
 					studRecord.put(username, student);
-	
 					synchronized (StudentAccount) {
 						StudentAccount.put(element, studRecord);
 					}
@@ -161,24 +153,16 @@ public class ServerFunction extends CommunicationFacilitator
 					Calendar cal = Calendar.getInstance();
 					String string = student.username + " / " + student.Password + " / " + student.firstname + " / " + student.lastname
 							+ " / " + student.phoneNumber + " / " + student.EducationalInstitute + " / " + dateFormat.format(cal.getTime());
-					
-					writeToFile(string, path);
-	
+				//	writeToFile(string, path);
 					System.out.println(student.username + " Created");
-					logtask.WriteLog("User Account Successfully Created");
+					//logtask.WriteLog("User Account Successfully Created");
 					return  " User Account for Successfully Created " ;
 			}
-			
-			// .....else condition whether there exists key for first character of the username
-
-			
 			else {
 				HashMap<String, Student> stud = StudentAccount.get(element);
 
 				if (stud.get(username) == null) {
-					
 					stud.put(username, student);
-
 					synchronized (StudentAccount) {
 						StudentAccount.put(element, stud);
 					}
@@ -187,27 +171,22 @@ public class ServerFunction extends CommunicationFacilitator
 					String string = student.username + " / " + student.Password + " / " + student.firstname + " / " + student.lastname + " / " + student.phoneNumber
 							+ " / " + student.EducationalInstitute + " / "
 							+ dateFormat.format(cal.getTime());
-					writeToFile(string, path);
 					System.out.println(student.username + " Created at "
 							+ dateFormat.format(cal.getTime()));
-					logtask.WriteLog(student.username + " Created at "
-							+ dateFormat.format(cal.getTime()));
-					logtask.WriteLog("User Account Successfully Created");
+//					logtask.WriteLog(student.username + " Created at "
+//							+ dateFormat.format(cal.getTime()));
+//					logtask.WriteLog("User Account Successfully Created");
 					return  " User Account for Successfully Created " ;
 				}
 
 				// return if there exists same username related with particular
 				// key
 				else {
-					logtask.WriteLog("user Already exsists");
+				//	logtask.WriteLog("user Already exsists");
 					System.out.println("User Account Already exsists");
 					return "User Account Already exsists";
 				}
 			}
-		} catch (IOException err) {
-			err.printStackTrace();
-		}
-		return "Invalid : Error has been occured";
 	}
 
 	/*

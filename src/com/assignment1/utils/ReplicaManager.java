@@ -115,22 +115,21 @@ public class ReplicaManager extends CommunicationFacilitator implements
 					Configuration.REPLICA_INTERFACE_PORT1);
 			removeReplicaFromSet(Configuration.REPLICA1);
 			removeReplicaFromFailureTracker(Configuration.REPLICA1);
-			//TODO should be removed..
-			removeReplicaFromNotificationTracker(Configuration.REPLICA1);
+			//removeReplicaFromNotificationTracker(Configuration.REPLICA1);
 		} else if (activeReplicas.contains(replicaName)
 				&& Configuration.REPLICA2.equals(replicaName)) {
 			mgr.send(data, Configuration.REPLICA_IP2,
 					Configuration.REPLICA_INTERFACE_PORT2);
 			removeReplicaFromSet(Configuration.REPLICA2);
 			removeReplicaFromFailureTracker(Configuration.REPLICA2);
-			removeReplicaFromNotificationTracker(Configuration.REPLICA2);
+//			removeReplicaFromNotificationTracker(Configuration.REPLICA2);
 		} else if (activeReplicas.contains(replicaName)
 				&& Configuration.REPLICA3.equals(replicaName)) {
 			mgr.send(data, Configuration.REPLICA_IP3,
 					Configuration.REPLICA_INTERFACE_PORT3);
 			removeReplicaFromSet(Configuration.REPLICA3);
 			removeReplicaFromFailureTracker(Configuration.REPLICA3);
-			removeReplicaFromNotificationTracker(Configuration.REPLICA3);
+//			removeReplicaFromNotificationTracker(Configuration.REPLICA3);
 		}
 //		System.out.println("ReplicaManager : killReplicaCore() : end "+replicaName);
 	}
@@ -185,7 +184,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 		}
 //		System.out.println("ReplicaManager : incrementNotifcationNotRecievedCount() : end ");
 		Thread.currentThread().sleep(
-				Configuration.MAX_DURATION_TO_WAIT_BEFORE_TIMEOUT * 2000);
+				Configuration.MAX_DURATION_TO_WAIT_BEFORE_TIMEOUT * 3000);
 	}
 
 	public void removeReplicaFromSet(String replicaName) {

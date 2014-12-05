@@ -54,34 +54,34 @@ public class ClientInterface extends CommunicationFacilitator implements
 		if (name.equals(Configuration.REPLICA2)) {
 			mgrone = new CommunicationManager(
 					Configuration.REPLICA_INTERFACE_PORT2, this);
-			concordia = new LibraryServer(
+			concordia = new com.Server.implementationK.LibraryServer(
 					Configuration.LIBRARY1, 0,
 					Configuration.K_UDP_PORT_1,
 					Configuration.REPLICA2);
-			mcgill = new LibraryServer(
+			mcgill = new com.Server.implementationK.LibraryServer(
 					Configuration.LIBRARY2, 0,
-					Configuration.K_UDP_PORT_1,
+					Configuration.K_UDP_PORT_2,
 					Configuration.REPLICA2);
-			vanier = new LibraryServer(
+			vanier = new com.Server.implementationK.LibraryServer(
 					Configuration.LIBRARY3, 0,
-					Configuration.K_UDP_PORT_1,
+					Configuration.K_UDP_PORT_3,
 					Configuration.REPLICA2);
 			instancesNotRunning = false;
 		}
 		if (name.equals(Configuration.REPLICA3)) {
 			mgrone = new CommunicationManager(
 					Configuration.REPLICA_INTERFACE_PORT3, this);
-			concordia = new LibraryServer(
+			concordia = new com.Server.implementationV.LibraryServer(
 					Configuration.LIBRARY1, 0,
 					Configuration.V_UDP_PORT_1,
 					Configuration.REPLICA3);
-			mcgill = new LibraryServer(
+			mcgill = new com.Server.implementationV.LibraryServer(
 					Configuration.LIBRARY2, 0,
-					Configuration.V_UDP_PORT_1,
+					Configuration.V_UDP_PORT_2,
 					Configuration.REPLICA3);
-			vanier = new LibraryServer(
+			vanier = new com.Server.implementationV.LibraryServer(
 					Configuration.LIBRARY3, 0,
-					Configuration.V_UDP_PORT_1,
+					Configuration.V_UDP_PORT_3,
 					Configuration.REPLICA3);
 			instancesNotRunning = false;
 		}
@@ -101,7 +101,8 @@ public class ClientInterface extends CommunicationFacilitator implements
 	
 		new ClientInterface(Configuration.REPLICA1);
 		new ClientInterface(Configuration.REPLICA2);
-		new ClientInterface(Configuration.REPLICA3);
+		//ReplicaManager mgr = new ReplicaManager();
+		//new ClientInterface(Configuration.REPLICA3);
 
 	}
 
@@ -244,7 +245,7 @@ public class ClientInterface extends CommunicationFacilitator implements
 								//TODO:	replicate it in all the other implementation
 								instancesNotRunning = false;
 
-							} else if (name.equals(Configuration.REPLICA2)) {
+							} else if (this.name.equals(Configuration.REPLICA2)) {
 								if (concordia != null) {
 									System.out.println("ClientInterface : server" +concordia+"restarting ");
 									concordia.exit();
@@ -268,7 +269,7 @@ public class ClientInterface extends CommunicationFacilitator implements
 										Configuration.K_UDP_PORT_3,
 										Configuration.REPLICA2);
 								instancesNotRunning = false;
-							} else if (name.equals(Configuration.REPLICA3)) {
+							} else if (this.name.equals(Configuration.REPLICA3)) {
 								if (concordia != null) {
 									System.out.println("ClientInterface : server" +concordia+"restarting ");
 									concordia.exit();
