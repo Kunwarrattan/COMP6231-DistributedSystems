@@ -45,8 +45,8 @@ public class Sequencer extends CommunicationFacilitator implements Runnable {
 					+ Configuration.UDP_DELIMITER + password
 					+ Configuration.UDP_DELIMITER + institutionName;
 			String timeStamp = mgr1.sendMulticast(data);
-			System.out.println("Sequencer : createAccount : timestamp : "
-					+ timeStamp);
+//			System.out.println("Sequencer : createAccount : timestamp : "
+//					+ timeStamp);
 			Set<String> responseSet = getResponseSet(timeStamp);
 			if (responseSet == null) {
 				throw new CommunicationException("Timed out..");
@@ -73,7 +73,7 @@ public class Sequencer extends CommunicationFacilitator implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("Sequencer : createAccount : end : ");
+		//System.out.println("Sequencer : createAccount : end : ");
 	}
 
 	public void reserveBook(String userName, String password, String bookName,
@@ -86,8 +86,8 @@ public class Sequencer extends CommunicationFacilitator implements Runnable {
 					+ Configuration.UDP_DELIMITER + authorName
 					+ Configuration.UDP_DELIMITER + instName;
 			String timeStamp = mgr1.sendMulticast(data);
-			System.out.println("Sequencer : createAccount : timestamp : "
-					+ timeStamp);
+//			System.out.println("Sequencer : createAccount : timestamp : "
+//					+ timeStamp);
 			Set<String> responseSet = getResponseSet(timeStamp);
 			if (responseSet == null) {
 				throw new CommunicationException("Timed out..");
@@ -207,8 +207,8 @@ public class Sequencer extends CommunicationFacilitator implements Runnable {
 			synchronized (monitor) {
 				try {
 					monitor.wait(Configuration.MAX_DURATION_TO_WAIT_BEFORE_TIMEOUT * 300);
-					System.out
-							.println("Sequencer : getResponseSet() : Waking up..");
+//					System.out
+//							.println("Sequencer : getResponseSet() : Waking up..");
 					synchronized (responseMap) {
 						Set<String> responseFromReplica = responseMap
 								.get(timeStamp);
@@ -217,11 +217,11 @@ public class Sequencer extends CommunicationFacilitator implements Runnable {
 							responseMap.remove(timeStamp);
 							return responseFromReplica;
 						} else if (responseFromReplica != null && i == 4) {
-							System.out
-									.println("Sequencer : getResponseSet : active replica count :"
-											+ activeReplicas
-											+ " not equal to the response count : "
-											+ responseFromReplica.size());
+//							System.out
+//									.println("Sequencer : getResponseSet : active replica count :"
+//											+ activeReplicas
+//											+ " not equal to the response count : "
+//											+ responseFromReplica.size());
 							responseMap.remove(timeStamp);
 						}
 					}
@@ -242,9 +242,9 @@ public class Sequencer extends CommunicationFacilitator implements Runnable {
 						String responseFromRM = responseMapForRM.get(timeStamp);
 						if (responseFromRM != null) {
 							responseMapForRM.remove(timeStamp);
-							System.out
-									.println("Sequencer : getResponseFromRM :"
-											+ responseFromRM);
+//							System.out
+//									.println("Sequencer : getResponseFromRM :"
+//											+ responseFromRM);
 							return responseFromRM;
 						}
 					}
@@ -279,13 +279,13 @@ public class Sequencer extends CommunicationFacilitator implements Runnable {
 	}
 
 	public void run() {
-		System.out.println("Sequencer rev running..");
+		//System.out.println("Sequencer rev running..");
 		String name = Thread.currentThread().getName();
 		if (name.equals(Configuration.RCV_MONITOR)) {
 			while (stopServer) {
 				String data = this.popFirstVal();
 				if (data != null) {
-					System.out.println("Request : Sequencer : " + data);
+				//	System.out.println("Request : Sequencer : " + data);
 					String[] arry;
 					arry = data.split(Configuration.COMMUNICATION_SEPERATOR);
 					final String timestamp = arry[0];
@@ -366,9 +366,9 @@ public class Sequencer extends CommunicationFacilitator implements Runnable {
 								}
 								set.add(response);
 								responseMap.put(responseArry[0], set);
-								System.out
-										.println("Sequencer : totReplicaCount :"
-												+ this.activeReplicas);
+//								System.out
+//										.println("Sequencer : totReplicaCount :"
+//												+ this.activeReplicas);
 								if (set.size() == activeReplicas
 										&& activeReplicas != 0) {
 									notifyAll = true;
@@ -390,8 +390,8 @@ public class Sequencer extends CommunicationFacilitator implements Runnable {
 		} else if (name.equals(Configuration.SEND_REQ_TO_RM)) {
 			while (stopServer) {
 				activeReplicas = listTotActiveReplicas();
-				System.out.println("Sequencer : Replica count refreshed .."
-						+ activeReplicas);
+//				System.out.println("Sequencer : Replica count refreshed .."
+//						+ activeReplicas);
 				try {
 					Thread.currentThread().sleep(Configuration.RECV_TIMEOUT);
 				} catch (InterruptedException e) {

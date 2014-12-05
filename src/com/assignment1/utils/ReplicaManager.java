@@ -35,18 +35,18 @@ public class ReplicaManager extends CommunicationFacilitator implements
 	public void listActiveReplicas(String timestamp, String hostName,
 			int clientPort) {
 		try {
-			System.out.println("ReplicaManager : listActiveReplicas() : Start.");
+			//System.out.println("ReplicaManager : listActiveReplicas() : Start.");
 			mgr.send(timestamp + Configuration.UDP_DELIMITER
 					+ Configuration.REPLICA_COUNT_STR
 					+ Configuration.UDP_DELIMITER + activeReplicas.size(),
 					hostName, clientPort);
-			System.out.println("ReplicaManager : listActiveReplicas() :"+ timestamp + Configuration.UDP_DELIMITER
-					+ Configuration.REPLICA_COUNT_STR
-					+ Configuration.UDP_DELIMITER + activeReplicas.size());
+			//System.out.println("ReplicaManager : listActiveReplicas() :"+ timestamp + Configuration.UDP_DELIMITER
+					//+ Configuration.REPLICA_COUNT_STR
+				//	+ Configuration.UDP_DELIMITER + activeReplicas.size());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("ReplicaManager : listActiveReplicas() : end.");
+		//System.out.println("ReplicaManager : listActiveReplicas() : end.");
 	}
 
 	public void handleFailure(String replica) {
@@ -157,7 +157,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 				numberOfTimesReplicaHeartBeatMissed.put(ary[1], 0);
 			} else {
 				if (i > 0) {
-					System.out.println("ReplicaManager : Replica "+ary[1]+" notification recieved..");
+				//	System.out.println("ReplicaManager : Replica "+ary[1]+" notification recieved..");
 					numberOfTimesReplicaHeartBeatMissed.put(ary[1], 0);
 				}
 			}

@@ -102,7 +102,7 @@ public class ClientInterface extends CommunicationFacilitator implements
 		new ClientInterface(Configuration.REPLICA1);
 		new ClientInterface(Configuration.REPLICA2);
 		//ReplicaManager mgr = new ReplicaManager();
-		//new ClientInterface(Configuration.REPLICA3);
+		new ClientInterface(Configuration.REPLICA3);
 
 	}
 
