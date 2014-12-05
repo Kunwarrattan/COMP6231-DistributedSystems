@@ -15,295 +15,137 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
+import com.assignment1.utils.FileOps;
+import com.assignment1.utils.PortClass;
+import com.assignment1.abstractclass.CommunicationFacilitator;
 
 import IdlFiles.LibraryException;
 import IdlFiles.LibraryManagementInterfaceOperations;
 
-import com.assignment1.abstractclass.CommunicationFacilitator;
-import com.assignment1.config.Configuration;
 import com.assignment1.exception.CommunicationException;
 import com.assignment1.model.Book;
 import com.assignment1.model.StudentAccount;
 import com.assignment1.utils.CommunicationManager;
-import com.assignment1.utils.FileOps;
-import com.assignment1.utils.PortClass;
+
+import com.assignment1.config.Configuration;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * @author VenkateshSR
+ * 
+ * @author venkateshSR
  * 
  */
 
-public class LibraryServer extends CommunicationFacilitator implements
-		LibraryManagementInterfaceOperations, Runnable {
+public class LibraryServer implements
+	LibraryManagementInterfaceOperations, Runnable {
+	
+	private CommunicationFacilitator facilitator;
 	private HashMap<String, Book> bookMap = null;
-	private HashMap<Character, HashMap<String, StudentAccount>> outhaccount = null;
-	private String uname;
+	
+	private String name;private PortClass port = null;
+	
+	private String replicaName = null;
 	private String logFile;
-	private String fileofAdmin;
-	private LinkedHashMap<String, StudentAccount> usersCopy = new LinkedHashMap<String, StudentAccount>();
-	private int nonReturnersport = 0;
+	private String adminFile;
+	
+	private int portForGetNonReturners = 0;
 	private int portForInterLibraryCommunication = 0;
-	private boolean serverStop = true;
 	@SuppressWarnings("unused")
-	private PortClass portclass = null;
-	private String replicaName = "";
 
-	/**
-	 * Start
-	 */
+	
 
 	private CommunicationManager mgrone;
 	public volatile boolean stopServer = true;
-	int receivingPort;
-	int sendingPort;
-
-	// public LibraryServer(){
-	// try {
-	// mgrone = new CommunicationManager(receivingPort, this);
-	// } catch (SocketException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// }
-	/**
-	 * End
-	 */
-
-	/**
-	 * 
-	 * @param name
-	 * @param portForGetNonReturners
-	 * @param interlibPort
-	 * @throws Exception
-	 */
+	private LinkedHashMap<String, StudentAccount> accountsCopy = new LinkedHashMap<String, StudentAccount>();
+	private HashMap<Character, HashMap<String, StudentAccount>> accounts = null;
+	
 	@SuppressWarnings("unchecked")
-	// public LibraryServer(String name,
-	// int interlibPort) throws Exception {
 	public LibraryServer(String name, int portForGetNonReturners,
-			int interlibPort, String replicaName) throws Exception {
-
-		super(name);
-		System.out.println("Library Server Started" + name + " Replica = "
-				+ replicaName + "Port" + portForGetNonReturners);
-		this.uname = name;
+			int portForInterLibraryCommunication,String replicaName) throws Exception {
+		System.out.println("StartingLibserver" + name + " Replica = " + replicaName + "Port" + portForGetNonReturners);
+		this.portForInterLibraryCommunication = portForInterLibraryCommunication;
+		this.name = name;
+		this.facilitator = new CommunicationFacilitator(name);
 		this.replicaName = replicaName;
-		// this.portForGetNonReturners = portForGetNonReturners;
-		this.portForInterLibraryCommunication = interlibPort;
 		FileOps.initServer(name);
-		String bookInfoFile = "//" + name + "//" + "bookDetails.ser";
-		String acctInfoFile = "//" + name + "//" + "studentAccount.ser";
-		logFile = "//" + name + "//" + "log.txt";
-		fileofAdmin = "//" + name + "//" + "Admin.txt";
+		String bookInfoFile = Configuration.CURRENT_DIR + name + "//" + Configuration.BOOK_MAP_SERIALIZED_FILE;
+		String acctInfoFile = Configuration.CURRENT_DIR + name + "//"+ Configuration.USER_ACCT_MAP_SERIALIZED_FILE;
+		logFile = Configuration.CURRENT_DIR + name + "//"
+				+ Configuration.LOG_FILE_NAME;
+		adminFile = Configuration.CURRENT_DIR + name + "//"
+				+ Configuration.ADMIN_FILE_NAME;
 		File file1 = new File(bookInfoFile);
 		File file2 = new File(acctInfoFile);
 		if (file1.exists()) {
-			bookMap = (HashMap<String, Book>) FileOps
-					.deserializeObjFromFile(bookInfoFile);
+			bookMap = (HashMap<String, Book>) FileOps.deserializeObjFromFile(bookInfoFile);
 		} else {
-			FileUtils.forceMkdir(new File("//" + name));
+			FileUtils.forceMkdir(new File(Configuration.CURRENT_DIR + name));
 			bookMap = new HashMap<String, Book>();
 			FileOps.serializeObjToFile(bookInfoFile, bookMap);
 		}
 		if (file2.exists()) {
-			outhaccount = (HashMap<Character, HashMap<String, StudentAccount>>) FileOps
-					.deserializeObjFromFile(acctInfoFile);
-		} else {
-			FileUtils.forceMkdir(new File("//" + name));
-			outhaccount = new HashMap<Character, HashMap<String, StudentAccount>>();
+			accounts = (HashMap<Character, HashMap<String, StudentAccount>>) FileOps.deserializeObjFromFile(acctInfoFile);} 
+		else {
+			FileUtils.forceMkdir(new File(Configuration.CURRENT_DIR + name));
+			accounts = new HashMap<Character, HashMap<String, StudentAccount>>();
 			populateKeysForAccounts();
-			FileOps.serializeObjToFile(acctInfoFile, outhaccount);
-		}
-		if (outhaccount.size() == 0) {
-			String temp = "//" + name + "//" + Configuration.USER_DIR;
+			FileOps.serializeObjToFile(acctInfoFile, accounts);}
+		if (accounts.size() == 0) {
+			String temp = Configuration.CURRENT_DIR + name + "//"
+					+ Configuration.USER_DIR;
 			FileUtils.deleteQuietly(new File(temp));
-			FileUtils.forceMkdir(new File(temp));
-		}
+			FileUtils.forceMkdir(new File(temp));}
 		if (bookMap.size() == 0) {
-			loadBooks();
-		}
-		Iterator<HashMap<String, StudentAccount>> iter = outhaccount.values()
-				.iterator();
+			loadBooks();}
+		Iterator<HashMap<String, StudentAccount>> iter = accounts.values().iterator();
 		while (iter.hasNext()) {
-			usersCopy.putAll(iter.next());
+			accountsCopy.putAll(iter.next());
 		}
-		// Port class instead of UDPManager
-		portclass = new PortClass(this, true);
-		mgrone = new CommunicationManager(Configuration.MULTICAST_PORT,
-				Configuration.RECIEVER_ROLE, this);
-
+		port = new PortClass(this, true);
+		mgrone = new CommunicationManager(Configuration.MULTICAST_PORT, Configuration.RECIEVER_ROLE,
+				this.facilitator);
 		new Thread(this).start();
 	}
-
-	/**
-	 * Add the default set of keys to accounts map..
-	 */
-
-	private void populateKeysForAccounts() {
-		// TODO Auto-generated method stub
+	public void populateKeysForAccounts() {
 		Character ch = new Character('A');
 		for (int i = 0; i < 26; i++) {
-			outhaccount.put(Character.valueOf((char) (ch + i)),
+			accounts.put(Character.valueOf((char) (ch + i)),
 					new HashMap<String, StudentAccount>());
 		}
 	}
-
-	public LinkedHashMap<String, StudentAccount> synchronizedGetUsersopy() {
-		synchronized (outhaccount) {
-			return usersCopy;
-		}
-	}
-
-	/**
-	 * This method is called from the client, to safely shut down the system.
-	 * This method persists all the necessary data structures to the file
-	 * system.
-	 * 
-	 */
-	public void exit() {
-		this.stopServer = false;
-		this.mgrone.exit();
-		System.out.println("LibraryServer : "+this.replicaName + " : exit() :");
-	}
-
-	/**
-	 * Synchronized getter to obtain the StudentAccount.
-	 * 
-	 * @param key
-	 * @param userName
-	 * @return
-	 */
-	public StudentAccount synchronizedGetAccounts(Character key, String userName) {
-		HashMap<String, StudentAccount> studentMap = null;
-		studentMap = outhaccount.get(key);
-		if (!studentMap.isEmpty()) {
-			synchronized (studentMap) {
-				return studentMap.get(userName);
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Synchronized getter to obtain the {@link BookDetails} Information.
-	 * 
-	 * @param key
-	 * @param userName
-	 * @return
-	 */
-	public Book synchronizedGetBook(String bookName) {
-		Book book = null;
-		synchronized (bookMap) {
-			book = bookMap.get(bookName);
-		}
-		if (book != null) {
-			return new Book(book.getName(), book.getAuthor(),
-					book.getNumberOfCopies());
-		}
-		return null;
-	}
-
-	/**
-	 * Sysnchronized setter to put the modified book object to the
-	 * {@link #bookMap}
-	 * 
-	 * @param book
-	 * @throws LibraryException
-	 */
-	public void synchronizedPutBook(Book book) throws LibraryException {
-		if (book != null) {
-			synchronized (bookMap) {
-				bookMap.put(
-						book.getName() + "_" + book.getAuthor(),
-						new Book(book.getName(), book.getAuthor(), book
-								.getNumberOfCopies()));
-			}
-		} else {
-			throw new LibraryException("Book cannot be empty..");
-		}
-	}
-
-	/**
-	 * Synchronized getter to obtain the {@link #usersCopy} from
-	 * {@link #getNonRetuners(String, String, String, int)}
-	 * 
-	 * @return
-	 */
-	public LinkedHashMap<String, StudentAccount> synchronizedGetAccountsCopy() {
-		synchronized (outhaccount) {
-			return usersCopy;
-		}
-	}
-
-	/**
-	 * Synchronized setter to put the StudentAccount into the
-	 * {@link #outhaccount} map
-	 * 
-	 * @param key
-	 * @param acct
-	 * @throws LibraryException
-	 */
-	public void synchronizedPutAccounts(Character key, StudentAccount acct)
-			throws LibraryException {
-		if (key != null && acct != null
-				&& StringUtils.isNotBlank(acct.getUserName())) {
-			HashMap<String, StudentAccount> studMap = outhaccount.get(key);
-			synchronized (studMap) {
-				studMap.put(acct.getUserName(), acct);
-				outhaccount.put(key, studMap);
-				usersCopy.put(acct.getUserName(), acct);
-			}
-		} else {
-			throw new LibraryException(
-					"Either key or Student account list is empty..");
-		}
-	}
-
-	public void createAccount(String firstName, String lastName,
-			String emailAddress, String phoneNumber, String userName,
+	public LinkedHashMap<String, StudentAccount> synchronizedGetAccountsCopy() {synchronized (accounts) {return accountsCopy;}}
+	public void createAccount(String firstName, String lastName,String emailAddr, String phoneNumber, String userName,
 			String password, String institutionName) throws LibraryException {
-		if (StringUtils.isBlank(userName) || StringUtils.isBlank(lastName)
-				|| StringUtils.isBlank(emailAddress)
-				|| StringUtils.isBlank(phoneNumber)
-				|| StringUtils.isBlank(firstName)
-				|| StringUtils.isBlank(password)
-				|| StringUtils.isBlank(institutionName)) {
+		if (StringUtils.isBlank(userName)|| StringUtils.isBlank(password)) {
 			FileOps.appendToFile(logFile, new StringBuilder(userName
 					+ ": createAccount : All the parameters are mandatory..."));
 			throw new LibraryException("All the parameters are mandatory...");
-			// return "All the parameters are mandatory...";
 
 		}
-		if (!institutionName.equals(uname)) {
+		if (!institutionName.equals(name)) {
 			FileOps.appendToFile(logFile, new StringBuilder(userName
 					+ ":Institution name cannot be different.."));
 			throw new LibraryException("Institution name cannot be different..");
-			// return "Institution name cannot be different..";
 		}
-		if (!(userName.length() >= 6 && userName.length() <= 15)
-				|| !(password.length() >= 6 && password.length() <= 15)) {
+		if (!(userName.length() >= Configuration.MINIMUM_CREDENTIALS_LEN && userName
+				.length() <= Configuration.MAXIMUM_CREDENTIALS_LEN)
+				|| !(password.length() >= Configuration.MINIMUM_CREDENTIALS_LEN && password
+						.length() <= Configuration.MAXIMUM_CREDENTIALS_LEN)) {
 			FileOps.appendToFile(
 					logFile,
 					new StringBuilder(
 							userName
-									+ ": createAccount :Username and password should be within 6 and 15 characters.."));
+									+ ": craete account"));
 			throw new LibraryException(
 					"Username and password should be within 6 and 15 characters..");
-			// return
-			// "Username and password should be within 6 and 15 characters..";
 		}
 		if (!phoneNumber.matches(Configuration.PHONE_REGEX_PTTRN)) {
-			FileOps.appendToFile(
-					logFile,
-					new StringBuilder(
-							userName
-									+ ": createAccount : Phone number doesn't match the pattern given.."));
+			FileOps.appendToFile(logFile,new StringBuilder(userName+ ": createAccount : Phone number doesn't match the pattern given.."));
 			throw new LibraryException(
 					"Phone number doesn't match the pattern given..");
-			// return "Phone number doesn't match the pattern given..";
 		}
-		if (!emailAddress.matches(Configuration.EMAIL_PATTERN)) {
+		if (!emailAddr.matches(Configuration.EMAIL_PATTERN)) {
 			FileOps.appendToFile(
 					logFile,
 					new StringBuilder(
@@ -311,28 +153,24 @@ public class LibraryServer extends CommunicationFacilitator implements
 									+ ": createAccount : Given Email doesnt match the given pattern.."));
 			throw new LibraryException(
 					"Given Email doesnt match the given pattern..");
-			// return "Given Email doesnt match the given pattern..";
 		}
 		FileOps.appendToFile(logFile, new StringBuilder(userName
 				+ ":All Validations passed.."));
-
+		
 		Character key = new Character(userName.toUpperCase().charAt(0));
-		StudentAccount studAcct = synchronizedGetAccounts(key, userName);
+		StudentAccount studAcct = accountssyn(key, userName);
 		boolean alreadyExists = true;
 		if (studAcct == null) {
 			alreadyExists = false;
-			studAcct = new StudentAccount(firstName, lastName, emailAddress,
+			studAcct = new StudentAccount(firstName, lastName, emailAddr,
 					phoneNumber, userName, password, institutionName);
-			FileOps.appendToFile(
-					logFile,
-					new StringBuilder(
-							userName
-									+ ":The account doesn't exist and hence creating new account.."));
+			FileOps.appendToFile(logFile,
+					new StringBuilder(userName+ ":The account doesn't exist and hence creating new account.."));
 		} else {
 			if (studAcct.getPassword().equals(password)) {
 				studAcct.setFirstName(firstName);
 				studAcct.setLastName(lastName);
-				studAcct.setEmailAddr(emailAddress);
+				studAcct.setEmailAddr(emailAddr);
 				studAcct.setLastName(lastName);
 				studAcct.setPhNo(phoneNumber);
 				FileOps.appendToFile(
@@ -344,7 +182,6 @@ public class LibraryServer extends CommunicationFacilitator implements
 				FileOps.appendToFile(logFile, new StringBuilder(userName
 						+ ": createAccount : User Credentials doesnt match.."));
 				throw new LibraryException("User Credentials doesnt match..");
-				// return "User Credentials doesnt match..";
 			}
 		}
 		synchronizedPutAccounts(key, studAcct);
@@ -359,9 +196,25 @@ public class LibraryServer extends CommunicationFacilitator implements
 		else
 			FileOps.appendToFile(studAcct.getLogFile(), new StringBuilder(
 					userName + ": createAccount : Account updated.."));
-		// return "All the parameters are mandatory...";
+		
+	}
+	public void synchronizedPutAccounts(Character key, StudentAccount acct)
+			throws LibraryException {
+		if (key != null && acct != null
+				&& StringUtils.isNotBlank(acct.getUserName())) {
+			HashMap<String, StudentAccount> studMap = accounts.get(key);
+			synchronized (studMap) {
+				studMap.put(acct.getUserName(), acct);
+				accounts.put(key, studMap);
+				accountsCopy.put(acct.getUserName(), acct);
+			}
+		} else {
+			throw new LibraryException(
+					"Either key or Student account list is empty..");
+		}
 	}
 
+	
 	public Book reserveBookCore(String bookName, String authorName,
 			String userName) throws LibraryException {
 		Book book = synchronizedGetBook(bookName + "_" + authorName);
@@ -370,7 +223,6 @@ public class LibraryServer extends CommunicationFacilitator implements
 					+ ":The book is not present in this library.."));
 			throw new LibraryException(Configuration.BOOK_NOT_FOUND,
 					"The book is not present in this library..");
-
 		} else {
 			int noOfCopies = book.getNumberOfCopies();
 			if (noOfCopies > 0) {
@@ -389,6 +241,7 @@ public class LibraryServer extends CommunicationFacilitator implements
 
 	}
 
+	
 	public void reserveBook(String userName, String password, String bookName,
 			String authorName, String inst) throws LibraryException {
 		if (StringUtils.isBlank(userName) || StringUtils.isBlank(password)
@@ -401,7 +254,7 @@ public class LibraryServer extends CommunicationFacilitator implements
 		FileOps.appendToFile(logFile, new StringBuilder(userName
 				+ ":All Validations passed.."));
 		Character key = new Character(userName.toUpperCase().charAt(0));
-		StudentAccount acct = synchronizedGetAccounts(key, userName);
+		StudentAccount acct = accountssyn(key, userName);
 		if (acct == null) {
 			FileOps.appendToFile(logFile, new StringBuilder(userName
 					+ ": reserveBook : Student Account doesnt exist.."));
@@ -452,6 +305,7 @@ public class LibraryServer extends CommunicationFacilitator implements
 		}
 	}
 
+	
 	public String getNonRetuners(String adminUserName, String adminPassword,
 			String institutionName, int days) throws LibraryException {
 		if (StringUtils.isBlank(adminUserName)
@@ -465,7 +319,7 @@ public class LibraryServer extends CommunicationFacilitator implements
 			throw new LibraryException(
 					"The specified parameters are not proper..");
 		}
-		if (!institutionName.equals(uname)) {
+		if (!institutionName.equals(name)) {
 			FileOps.appendToFile(logFile, new StringBuilder(adminUserName
 					+ ": getNonRetuners : The institution name doesnt match.."));
 			throw new LibraryException("The institution name doesnt match..");
@@ -494,16 +348,9 @@ public class LibraryServer extends CommunicationFacilitator implements
 							if (checkWhetherDatePassedNumberOfDays(
 									book.getReservedDate(),
 									book.getCurrentDate(), days)) {
+
 								builder.append("\n"+acct.getUserName()+book.getName()+book.getAuthor());
-//								if (builder.length() == 0) {
-//									builder.append("Educational Institution : ");
-//									builder.append(uname);
-//									builder.append(System.lineSeparator());
-//								}
-//								builder.append(acct.getFirstName() + " ");
-//								builder.append(acct.getLastName() + " ");
-//								builder.append(acct.getPhNo());
-//								builder.append(System.lineSeparator());
+
 								break;
 							}
 						}
@@ -514,30 +361,30 @@ public class LibraryServer extends CommunicationFacilitator implements
 		StringBuilder logBuilder = new StringBuilder(adminUserName
 				+ ": getNonRetuners : Finished Executing the function");
 		logBuilder.append(builder);
-		FileOps.appendToFile(fileofAdmin, logBuilder);
+		FileOps.appendToFile(adminFile, logBuilder);
 		FileOps.appendToFile(logFile, logBuilder);
 		return builder.toString();
 	}
 
+	
 	public void reserveInterLibrary(String userName, String password,
-			String bookName, String authorName, String inst)
-			throws LibraryException {
+			String bookName, String authorName, String inst) throws LibraryException {
 		try {
-			reserveBook(userName, password, bookName, authorName, inst);
+			reserveBook(userName, password, bookName, authorName,inst);
 		} catch (LibraryException exp) {
 			if (exp.code == Configuration.BOOK_NOT_FOUND) {
-				if (portForInterLibraryCommunication != Configuration.UDP_PORT_1
+				if (portForInterLibraryCommunication != Configuration.V_UDP_PORT_1
 						&& wrapperForInterLibraryCommunication(bookName,
-								authorName, Configuration.UDP_PORT_1)) {
+								authorName, Configuration.V_UDP_PORT_1)) {
 					updateStudentReservedBooks(userName, bookName, authorName);
 
-				} else if (portForInterLibraryCommunication != Configuration.UDP_PORT_2
+				} else if (portForInterLibraryCommunication != Configuration.V_UDP_PORT_2
 						&& wrapperForInterLibraryCommunication(bookName,
-								authorName, Configuration.UDP_PORT_2)) {
+								authorName, Configuration.V_UDP_PORT_2)) {
 					updateStudentReservedBooks(userName, bookName, authorName);
-				} else if (portForInterLibraryCommunication != Configuration.UDP_PORT_3
+				} else if (portForInterLibraryCommunication != Configuration.V_UDP_PORT_3
 						&& wrapperForInterLibraryCommunication(bookName,
-								authorName, Configuration.UDP_PORT_3)) {
+								authorName, Configuration.V_UDP_PORT_3)) {
 					updateStudentReservedBooks(userName, bookName, authorName);
 				} else {
 					throw new LibraryException(
@@ -552,7 +399,7 @@ public class LibraryServer extends CommunicationFacilitator implements
 	private void updateStudentReservedBooks(String userName, String bookName,
 			String authorName) throws LibraryException {
 		Character key = new Character(userName.toUpperCase().charAt(0));
-		StudentAccount acct = synchronizedGetAccounts(key, userName);
+		StudentAccount acct = accountssyn(key, userName);
 		if (acct != null) {
 			acct.getReservedBooks().put(bookName + "_" + authorName,
 					new Book(bookName, authorName, new Date()));
@@ -569,9 +416,10 @@ public class LibraryServer extends CommunicationFacilitator implements
 		}
 	}
 
+	
 	private boolean wrapperForInterLibraryCommunication(String bookName,
 			String authorName, int serverPort) {
-		String content = ConnectionwithOtherServers(bookName, authorName,
+		String content = communicateWithOtherLibrariesUDP(bookName, authorName,
 				serverPort);
 		return processResponse(content);
 	}
@@ -591,17 +439,17 @@ public class LibraryServer extends CommunicationFacilitator implements
 		return retVal;
 	}
 
-	private String ConnectionwithOtherServers(String nameofbook,
-			String authorofbook, int portofserver) {
+	private String communicateWithOtherLibrariesUDP(String bookName,
+			String authorName, int serverPort) {
 		DatagramSocket aSocket = null;
-		String content = nameofbook + ":" + authorofbook + ":" + uname;
+		String content = bookName + ":" + authorName + ":" + name;
 		byte[] dataBytes = content.getBytes();
 		String response = "";
 		try {
 			aSocket = new DatagramSocket();
 			InetAddress aHost = InetAddress.getByName("localhost");
 			DatagramPacket request = new DatagramPacket(dataBytes,
-					dataBytes.length, aHost, portofserver);
+					dataBytes.length, aHost, serverPort);
 			aSocket.send(request);
 			byte[] buffer = new byte[1000];
 			DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
@@ -610,7 +458,6 @@ public class LibraryServer extends CommunicationFacilitator implements
 			System.arraycopy(reply.getData(), reply.getOffset(),
 					dataFromServer, 0, reply.getLength());
 			response += new String(dataFromServer);
-			response = response.trim();
 		} catch (SocketException e) {
 			System.out.println("Socket: " + e.getMessage());
 		} catch (IOException e) {
@@ -636,7 +483,7 @@ public class LibraryServer extends CommunicationFacilitator implements
 
 	public void setDuration(String userName, String bookName, int numOfDays)
 			throws Exception {
-		StudentAccount acct = synchronizedGetAccounts(userName.toUpperCase()
+		StudentAccount acct = accountssyn(userName.toUpperCase()
 				.charAt(0), userName);
 		if (acct != null) {
 			HashMap<String, Book> books = acct.getReservedBooks();
@@ -657,43 +504,16 @@ public class LibraryServer extends CommunicationFacilitator implements
 		}
 	}
 
-	// public static void main(String[] args) throws Exception {
-	// try {
-	//
-	// LibraryServer server1 = new LibraryServer(Configuration.LIBRARY1,0,
-	// Configuration.UDP_PORT_1);
-	// LibraryServer server2 = new LibraryServer(Configuration.LIBRARY2,0,
-	// Configuration.UDP_PORT_2);
-	// LibraryServer server3 = new LibraryServer(Configuration.LIBRARY3,0,
-	// Configuration.UDP_PORT_3);
-	// server1.setDuration("venkateshsr", "3D Math",
-	// Configuration.DEFAULT_NO_OF_DAYS+4);
-	// server1.setDuration("charlie", "3D Math",
-	// Configuration.DEFAULT_NO_OF_DAYS+6);
-	// server1.loadBooks();
-	// server2.loadBooks();
-	// server3.loadBooks();
-	// Endpoint.publish(Configuration.HOSTNAME+server1.uname, server1);
-	// Endpoint.publish(Configuration.HOSTNAME+server2.uname, server2);
-	// Endpoint.publish(Configuration.HOSTNAME+server3.uname, server3);
-	//
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// }
 
-	/**
-	 * used to populate data in the server instances...
-	 */
 	public void loadBooks() {
-		if (uname == Configuration.LIBRARY1) {
+		if (name == Configuration.LIBRARY1) {
 			Book book1 = new Book("Cuda", "Nicholas", 2);
 			Book book2 = new Book("Opencl", "Munshi", 3);
 			Book book3 = new Book("3D Math", "Fletcher", 1);
 			bookMap.put(book1.getName() + "_" + book1.getAuthor(), book1);
 			bookMap.put(book2.getName() + "_" + book2.getAuthor(), book2);
 			bookMap.put(book3.getName() + "_" + book3.getAuthor(), book3);
-		} else if (uname == Configuration.LIBRARY2) {
+		} else if (name == Configuration.LIBRARY2) {
 			Book book1 = new Book("Cuda", "Nicholas", 2);
 			Book book2 = new Book("Opencl", "Munshi", 3);
 			Book book3 = new Book("3D Math", "Fletcher", 1);
@@ -710,12 +530,56 @@ public class LibraryServer extends CommunicationFacilitator implements
 		}
 	}
 
+	public void exit() {
+		this.stopServer = false;
+		this.mgrone.exit();
+		System.out.println("LibraryServer : "+this.replicaName + " : exit() :");
+	}
+
+	
+	public StudentAccount accountssyn(Character key, String userName) {
+		HashMap<String, StudentAccount> studentMap = null;
+		studentMap = accounts.get(key);
+		if (!studentMap.isEmpty()) {
+			synchronized (studentMap) {
+				return studentMap.get(userName);
+			}
+		}
+		return null;
+	}
+
+	
+	public Book synchronizedGetBook(String bookName) {
+		Book book = null;
+		synchronized (bookMap) {
+			book = bookMap.get(bookName);
+		}
+		if (book != null) {
+			return new Book(book.getName(), book.getAuthor(),
+					book.getNumberOfCopies());
+		}
+		return null;
+	}
+
+	
+	public void synchronizedPutBook(Book book) throws LibraryException {
+		if (book != null) {
+			synchronized (bookMap) {
+				bookMap.put(
+						book.getName() + "_" + book.getAuthor(),
+						new Book(book.getName(), book.getAuthor(), book
+								.getNumberOfCopies()));
+			}
+		} else {
+			throw new LibraryException("Book cannot be empty..");
+		}
+	}
 	public String getName() {
-		return uname;
+		return name;
 	}
 
 	public void setName(String name) {
-		this.uname = name;
+		this.name = name;
 	}
 
 	public String getLogFile() {
@@ -727,11 +591,11 @@ public class LibraryServer extends CommunicationFacilitator implements
 	}
 
 	public boolean isStopServer() {
-		return serverStop;
+		return stopServer;
 	}
 
 	public void setStopServer(boolean stopServer) {
-		this.serverStop = stopServer;
+		this.stopServer = stopServer;
 	}
 
 	public int getPortForInterLibraryCommunication() {
@@ -744,35 +608,33 @@ public class LibraryServer extends CommunicationFacilitator implements
 	}
 
 	public int getPortForGetNonReturners() {
-		return nonReturnersport;
+		return portForGetNonReturners;
 	}
 
 	public void setPortForGetNonReturners(int portForGetNonReturners) {
-		this.nonReturnersport = portForGetNonReturners;
+		this.portForGetNonReturners = portForGetNonReturners;
 	}
 
-	@Override
 	public void run() {
 		while (stopServer) {
-			String data = this.popFirstVal();
+			String data = this.facilitator.popFirstVal();
 			if (data != null) {
 				String[] arry;
 				arry = data.split(Configuration.COMMUNICATION_SEPERATOR);
 				String timestamp = arry[0];
 				String request = arry[1];
 				String hostname = arry[2];
+				//TODO: change port to SEQUENCER_RECV_PORT as shown below in all the implementation.. 
 				int port = Configuration.SEQUENCER_RECV_PORT;
-				String response = timestamp + Configuration.UDP_DELIMITER
-						+ this.replicaName + Configuration.UDP_DELIMITER
+				String response = timestamp + Configuration.UDP_DELIMITER + this.replicaName+Configuration.UDP_DELIMITER
 						+ Configuration.SUCCESS_STRING;
-				String failureResponse = timestamp
-						+ Configuration.UDP_DELIMITER + this.replicaName
-						+ Configuration.UDP_DELIMITER
+				String failureResponse = timestamp + Configuration.UDP_DELIMITER + this.replicaName+ Configuration.UDP_DELIMITER
 						+ Configuration.FAILURE_STRING;
+				//TODO: replicate the same in all the servers
+				int i = 1;
 				if (request.contains(Configuration.CREATE_ACCOUNT)) {
 					String requestParam[] = request
 							.split(Configuration.UDP_DELIMITER);
-					int i = 0;
 					try {
 						createAccount(requestParam[i++], requestParam[i++],
 								requestParam[i++], requestParam[i++],
@@ -785,31 +647,27 @@ public class LibraryServer extends CommunicationFacilitator implements
 				} else if (request.contains(Configuration.RESERVE_BOOK)) {
 					String requestParam[] = request
 							.split(Configuration.UDP_DELIMITER);
-					int i = 0;
 					try {
 						reserveBook(requestParam[i++], requestParam[i++],
-								requestParam[i++], requestParam[i++],
-								requestParam[i++]);
+								requestParam[i++], requestParam[i++],requestParam[i++]);
 
 					} catch (LibraryException e) {
-						response = failureResponse;
+						response =failureResponse;
 					}
 				} else if (request
 						.contains(Configuration.RESERVE_INTER_LIBRARY)) {
 					String requestParam[] = request
 							.split(Configuration.UDP_DELIMITER);
-					int i = 0;
 					try {
 						reserveInterLibrary(requestParam[i++],
 								requestParam[i++], requestParam[i++],
-								requestParam[i++], requestParam[i++]);
+								requestParam[i++],requestParam[i++]);
 					} catch (LibraryException e) {
 						response = failureResponse;
 					}
 				} else if (request.contains(Configuration.GET_NON_RETUNERS)) {
 					String requestParam[] = request
 							.split(Configuration.UDP_DELIMITER);
-					int i = 0;
 					try {
 						response += Configuration.UDP_DELIMITER
 								+ getNonRetuners(requestParam[i++],
@@ -827,7 +685,14 @@ public class LibraryServer extends CommunicationFacilitator implements
 					e.printStackTrace();
 				}
 			}
+			try {
+				Thread.currentThread().sleep(10);
+			} catch (InterruptedException e) {
+				
+				e.printStackTrace();
+			}
 		}
-		// mgrone.exit();
+		
 	}
+	
 }
