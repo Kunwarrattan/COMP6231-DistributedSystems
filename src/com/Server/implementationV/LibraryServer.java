@@ -14,19 +14,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-
 import com.assignment1.utils.FileOps;
 import com.assignment1.utils.PortClass;
 import com.assignment1.abstractclass.CommunicationFacilitator;
-
 import IdlFiles.LibraryException;
 import IdlFiles.LibraryManagementInterfaceOperations;
-
 import com.assignment1.exception.CommunicationException;
 import com.assignment1.model.Book;
 import com.assignment1.model.StudentAccount;
 import com.assignment1.utils.CommunicationManager;
-
 import com.assignment1.config.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,27 +35,19 @@ import org.apache.commons.lang3.StringUtils;
 
 public class LibraryServer implements
 	LibraryManagementInterfaceOperations, Runnable {
-	
 	private CommunicationFacilitator facilitator;
 	private HashMap<String, Book> bookMap = null;
-	
-	private String name;private PortClass port = null;
-	
+	private String name;
+	private PortClass port = null;
 	private String replicaName = null;
 	private String logFile;
 	private String adminFile;
-	
 	private int portForGetNonReturners = 0;
 	private int portForInterLibraryCommunication = 0;
-	@SuppressWarnings("unused")
-
-	
-
 	private CommunicationManager mgrone;
 	public volatile boolean stopServer = true;
 	private LinkedHashMap<String, StudentAccount> accountsCopy = new LinkedHashMap<String, StudentAccount>();
 	private HashMap<Character, HashMap<String, StudentAccount>> accounts = null;
-	
 	@SuppressWarnings("unchecked")
 	public LibraryServer(String name, int portForGetNonReturners,
 			int portForInterLibraryCommunication,String replicaName) throws Exception {
@@ -84,6 +72,7 @@ public class LibraryServer implements
 			bookMap = new HashMap<String, Book>();
 			FileOps.serializeObjToFile(bookInfoFile, bookMap);
 		}
+		
 		if (file2.exists()) {
 			accounts = (HashMap<Character, HashMap<String, StudentAccount>>) FileOps.deserializeObjFromFile(acctInfoFile);} 
 		else {
@@ -119,26 +108,20 @@ public class LibraryServer implements
 			String password, String institutionName) throws LibraryException {
 		if (StringUtils.isBlank(userName)|| StringUtils.isBlank(password)) {
 			FileOps.appendToFile(logFile, new StringBuilder(userName
-					+ ": createAccount : All the parameters are mandatory..."));
-			throw new LibraryException("All the parameters are mandatory...");
-
+					+ ": createAccount : please parameters are important"));
+			throw new LibraryException("please parameters are important");
 		}
 		if (!institutionName.equals(name)) {
 			FileOps.appendToFile(logFile, new StringBuilder(userName
-					+ ":Institution name cannot be different.."));
-			throw new LibraryException("Institution name cannot be different..");
+					+ ":should be same institution"));
+			throw new LibraryException("should be same institution");
 		}
 		if (!(userName.length() >= Configuration.MINIMUM_CREDENTIALS_LEN && userName
 				.length() <= Configuration.MAXIMUM_CREDENTIALS_LEN)
 				|| !(password.length() >= Configuration.MINIMUM_CREDENTIALS_LEN && password
 						.length() <= Configuration.MAXIMUM_CREDENTIALS_LEN)) {
-			FileOps.appendToFile(
-					logFile,
-					new StringBuilder(
-							userName
-									+ ": craete account"));
-			throw new LibraryException(
-					"Username and password should be within 6 and 15 characters..");
+			FileOps.appendToFile(logFile,new StringBuilder(userName+ ": craete account"));
+			throw new LibraryException("Username and password should be within 6 and 15 characters..");
 		}
 		if (!phoneNumber.matches(Configuration.PHONE_REGEX_PTTRN)) {
 			FileOps.appendToFile(logFile,new StringBuilder(userName+ ": createAccount : Phone number doesn't match the pattern given.."));
@@ -146,26 +129,18 @@ public class LibraryServer implements
 					"Phone number doesn't match the pattern given..");
 		}
 		if (!emailAddr.matches(Configuration.EMAIL_PATTERN)) {
-			FileOps.appendToFile(
-					logFile,
-					new StringBuilder(
-							userName
-									+ ": createAccount : Given Email doesnt match the given pattern.."));
-			throw new LibraryException(
-					"Given Email doesnt match the given pattern..");
+			FileOps.appendToFile(logFile,new StringBuilder(userName+ ": createAccount : Given Email doesnt match the given pattern.."));
+			throw new LibraryException("Given Email doesnt match the given pattern..");
 		}
-		FileOps.appendToFile(logFile, new StringBuilder(userName
-				+ ":All Validations passed.."));
+		FileOps.appendToFile(logFile, new StringBuilder(userName+ ":All Validations passed.."));
 		
 		Character key = new Character(userName.toUpperCase().charAt(0));
 		StudentAccount studAcct = accountssyn(key, userName);
 		boolean alreadyExists = true;
 		if (studAcct == null) {
 			alreadyExists = false;
-			studAcct = new StudentAccount(firstName, lastName, emailAddr,
-					phoneNumber, userName, password, institutionName);
-			FileOps.appendToFile(logFile,
-					new StringBuilder(userName+ ":The account doesn't exist and hence creating new account.."));
+			studAcct = new StudentAccount(firstName, lastName, emailAddr,phoneNumber, userName, password, institutionName);
+			FileOps.appendToFile(logFile,new StringBuilder(userName+ ":The account doesn't exist and hence creating new account.."));
 		} else {
 			if (studAcct.getPassword().equals(password)) {
 				studAcct.setFirstName(firstName);
@@ -173,29 +148,18 @@ public class LibraryServer implements
 				studAcct.setEmailAddr(emailAddr);
 				studAcct.setLastName(lastName);
 				studAcct.setPhNo(phoneNumber);
-				FileOps.appendToFile(
-						logFile,
-						new StringBuilder(
-								userName
-										+ ":The account exist and hence updating the account information.."));
+				FileOps.appendToFile(logFile,new StringBuilder(userName+ ":The account exist and hence updating the account information.."));
 			} else {
-				FileOps.appendToFile(logFile, new StringBuilder(userName
-						+ ": createAccount : User Credentials doesnt match.."));
+				FileOps.appendToFile(logFile, new StringBuilder(userName+ ": createAccount : User Credentials doesnt match.."));
 				throw new LibraryException("User Credentials doesnt match..");
 			}
 		}
 		synchronizedPutAccounts(key, studAcct);
-		FileOps.appendToFile(logFile, new StringBuilder(userName
-				+ ": createAccount : Account successfully created.."));
+		FileOps.appendToFile(logFile, new StringBuilder(userName+ ": createAccount : Account successfully created.."));
 		if (!alreadyExists)
-			FileOps.appendToFile(
-					studAcct.getLogFile(),
-					new StringBuilder(
-							userName
-									+ ": createAccount : Account successfully created.."));
+			FileOps.appendToFile(studAcct.getLogFile(),new StringBuilder(userName+ ": createAccount : Account successfully created.."));
 		else
-			FileOps.appendToFile(studAcct.getLogFile(), new StringBuilder(
-					userName + ": createAccount : Account updated.."));
+			FileOps.appendToFile(studAcct.getLogFile(), new StringBuilder(userName + ": createAccount : Account updated.."));
 		
 	}
 	public void synchronizedPutAccounts(Character key, StudentAccount acct)
@@ -219,22 +183,16 @@ public class LibraryServer implements
 			String userName) throws LibraryException {
 		Book book = synchronizedGetBook(bookName + "_" + authorName);
 		if (book == null) {
-			FileOps.appendToFile(logFile, new StringBuilder(userName
-					+ ":The book is not present in this library.."));
-			throw new LibraryException(Configuration.BOOK_NOT_FOUND,
-					"The book is not present in this library..");
+			FileOps.appendToFile(logFile, new StringBuilder(userName+ ":The book is not present in this library.."));
+			throw new LibraryException(Configuration.BOOK_NOT_FOUND,"The book is not present in this library..");
 		} else {
 			int noOfCopies = book.getNumberOfCopies();
 			if (noOfCopies > 0) {
 				book.setNumberOfCopies(--noOfCopies);
 				synchronizedPutBook(book);
 			} else {
-				FileOps.appendToFile(logFile, new StringBuilder(userName
-						+ ": reserveBook :Book : " + book.getName()
-						+ " by Author : " + book.getAuthor()
-						+ " is not available currently"));
-				throw new LibraryException(Configuration.BOOK_NOT_FOUND,
-						"The book is not available currently..");
+				FileOps.appendToFile(logFile, new StringBuilder(userName+ ": reserveBook :Book : " + book.getName()+ " by Author : " + book.getAuthor()+ " is not available currently"));
+				throw new LibraryException(Configuration.BOOK_NOT_FOUND,"The book is not available currently..");
 			}
 		}
 		return book;
@@ -244,62 +202,35 @@ public class LibraryServer implements
 	
 	public void reserveBook(String userName, String password, String bookName,
 			String authorName, String inst) throws LibraryException {
-		if (StringUtils.isBlank(userName) || StringUtils.isBlank(password)
-				|| StringUtils.isBlank(bookName)
-				|| StringUtils.isBlank(authorName)) {
-			FileOps.appendToFile(logFile, new StringBuilder(userName
-					+ ": reserveBook : All the parameters are mandatory..."));
+		if (StringUtils.isBlank(userName) || StringUtils.isBlank(password)|| StringUtils.isBlank(bookName)|| StringUtils.isBlank(authorName)) {
+			FileOps.appendToFile(logFile, new StringBuilder(userName+ ": reserveBook : All the parameters are mandatory..."));
 			throw new LibraryException("All the parameters are mandatory...");
 		}
-		FileOps.appendToFile(logFile, new StringBuilder(userName
-				+ ":All Validations passed.."));
+		FileOps.appendToFile(logFile, new StringBuilder(userName+ ":All Validations passed.."));
 		Character key = new Character(userName.toUpperCase().charAt(0));
 		StudentAccount acct = accountssyn(key, userName);
 		if (acct == null) {
-			FileOps.appendToFile(logFile, new StringBuilder(userName
-					+ ": reserveBook : Student Account doesnt exist.."));
+			FileOps.appendToFile(logFile, new StringBuilder(userName+ ": reserveBook : Student Account doesnt exist.."));
 			throw new LibraryException("Student Account doesnt exist..");
 		}
-		FileOps.appendToFile(logFile, new StringBuilder(userName
-				+ ":Account exits.."));
+		FileOps.appendToFile(logFile, new StringBuilder(userName+ ":Account exits.."));
 		if (!acct.getPassword().equals(password)) {
-			FileOps.appendToFile(logFile, new StringBuilder(userName
-					+ ": reserveBook : User Credentials doesnt match.."));
+			FileOps.appendToFile(logFile, new StringBuilder(userName+ ": reserveBook : User Credentials doesnt match.."));
 			throw new LibraryException("User Credentials doesnt match..");
 		}
 		HashMap<String, Book> reservedBook = acct.getReservedBooks();
 		Book book = reservedBook.get(bookName + "_" + authorName);
 		if (book != null) {
-			FileOps.appendToFile(
-					logFile,
-					new StringBuilder(
-							userName
-									+ ": reserveBook : A book already exists in the Student account.."));
-			throw new LibraryException(
-					"A book already exists in the Student account..");
+			FileOps.appendToFile(logFile,new StringBuilder(userName+ ": reserveBook : A book already exists in the Student account.."));
+			throw new LibraryException("A book already exists in the Student account..");
 		}
 		try {
 			book = reserveBookCore(bookName, authorName, userName);
-			Book bookInStudAcct = new Book(book.getName(), book.getAuthor(),
-					new Date());
+			Book bookInStudAcct = new Book(book.getName(), book.getAuthor(),new Date());
 			reservedBook.put(bookName + "_" + authorName, bookInStudAcct);
 			synchronizedPutAccounts(key, acct);
-			FileOps.appendToFile(
-					logFile,
-					new StringBuilder(userName + ": reserveBook : Book : "
-							+ book.getName() + " by Author : "
-							+ book.getAuthor() + " is reserved. Total num"
-							+ "of books available " + book.getNumberOfCopies()));
-			FileOps.appendToFile(
-					acct.getLogFile(),
-					new StringBuilder(
-							userName
-									+ ": reserveBook : Successfully reserved the book with name "
-									+ bookInStudAcct.getName()
-									+ " by Authour : "
-									+ bookInStudAcct.getAuthor() + " for "
-									+ Configuration.DEFAULT_NO_OF_DAYS
-									+ " days.."));
+			FileOps.appendToFile(logFile,new StringBuilder(userName + ": reserveBook : Book : "+ book.getName() + " by Author : "+ book.getAuthor() + " is reserved. Total num"+ "of books available " + book.getNumberOfCopies()));
+			FileOps.appendToFile(acct.getLogFile(),new StringBuilder(userName+ ": reserveBook : Successfully reserved the book with name "+ bookInStudAcct.getName()+ " by Authour : "+ bookInStudAcct.getAuthor() + " for "+ Configuration.DEFAULT_NO_OF_DAYS+ " days.."));
 		} catch (LibraryException e) {
 			throw e;
 		}
@@ -308,29 +239,16 @@ public class LibraryServer implements
 	
 	public String getNonRetuners(String adminUserName, String adminPassword,
 			String institutionName, int days) throws LibraryException {
-		if (StringUtils.isBlank(adminUserName)
-				|| StringUtils.isBlank(adminPassword)
-				|| StringUtils.isBlank(institutionName) || days <= 0) {
-			FileOps.appendToFile(
-					logFile,
-					new StringBuilder(
-							adminUserName
-									+ ": getNonRetuners : The specified parameters are not proper.."));
-			throw new LibraryException(
-					"The specified parameters are not proper..");
+		if (StringUtils.isBlank(adminUserName)|| StringUtils.isBlank(adminPassword)|| StringUtils.isBlank(institutionName) || days <= 0) {
+			FileOps.appendToFile(logFile,new StringBuilder(adminUserName+ ": getNonRetuners : The specified parameters are not proper.."));
+			throw new LibraryException("The specified parameters are not proper..");
 		}
 		if (!institutionName.equals(name)) {
-			FileOps.appendToFile(logFile, new StringBuilder(adminUserName
-					+ ": getNonRetuners : The institution name doesnt match.."));
+			FileOps.appendToFile(logFile, new StringBuilder(adminUserName+ ": getNonRetuners : The institution name doesnt match.."));
 			throw new LibraryException("The institution name doesnt match..");
 		}
-		if (!adminPassword.equals(Configuration.ADMIN_PASSWORD)
-				|| !adminUserName.equals(Configuration.ADMIN_USER_NAME)) {
-			FileOps.appendToFile(
-					logFile,
-					new StringBuilder(
-							adminUserName
-									+ ": getNonRetuners : The admin credentials doesnt match.."));
+		if (!adminPassword.equals(Configuration.ADMIN_PASSWORD)|| !adminUserName.equals(Configuration.ADMIN_USER_NAME)) {
+			FileOps.appendToFile(logFile,new StringBuilder(adminUserName+ ": getNonRetuners : The admin credentials doesnt match.."));
 			throw new LibraryException("The admin credentials doesnt match..");
 		}
 		LinkedHashMap<String, StudentAccount> studAcct = synchronizedGetAccountsCopy();
@@ -350,7 +268,6 @@ public class LibraryServer implements
 									book.getCurrentDate(), days)) {
 
 								builder.append("\n"+acct.getUserName()+book.getName()+book.getAuthor());
-
 								break;
 							}
 						}
@@ -359,7 +276,7 @@ public class LibraryServer implements
 			}
 		}
 		StringBuilder logBuilder = new StringBuilder(adminUserName
-				+ ": getNonRetuners : Finished Executing the function");
+				+ ": getNonRetuners : Completed");
 		logBuilder.append(builder);
 		FileOps.appendToFile(adminFile, logBuilder);
 		FileOps.appendToFile(logFile, logBuilder);
@@ -373,22 +290,15 @@ public class LibraryServer implements
 			reserveBook(userName, password, bookName, authorName,inst);
 		} catch (LibraryException exp) {
 			if (exp.code == Configuration.BOOK_NOT_FOUND) {
-				if (portForInterLibraryCommunication != Configuration.V_UDP_PORT_1
-						&& wrapperForInterLibraryCommunication(bookName,
-								authorName, Configuration.V_UDP_PORT_1)) {
+				if (portForInterLibraryCommunication != Configuration.V_UDP_PORT_1&& wrapperForInterLibraryCommunication(bookName,authorName, Configuration.V_UDP_PORT_1)) {
 					updateStudentReservedBooks(userName, bookName, authorName);
 
-				} else if (portForInterLibraryCommunication != Configuration.V_UDP_PORT_2
-						&& wrapperForInterLibraryCommunication(bookName,
-								authorName, Configuration.V_UDP_PORT_2)) {
+				} else if (portForInterLibraryCommunication != Configuration.V_UDP_PORT_2&& wrapperForInterLibraryCommunication(bookName,authorName, Configuration.V_UDP_PORT_2)) {
 					updateStudentReservedBooks(userName, bookName, authorName);
-				} else if (portForInterLibraryCommunication != Configuration.V_UDP_PORT_3
-						&& wrapperForInterLibraryCommunication(bookName,
-								authorName, Configuration.V_UDP_PORT_3)) {
+				} else if (portForInterLibraryCommunication != Configuration.V_UDP_PORT_3&& wrapperForInterLibraryCommunication(bookName,authorName, Configuration.V_UDP_PORT_3)) {
 					updateStudentReservedBooks(userName, bookName, authorName);
 				} else {
-					throw new LibraryException(
-							"Book not found in any of the libraries.");
+					throw new LibraryException("Book not found in any of the libraries.");
 				}
 			} else {
 				throw exp;
@@ -396,27 +306,15 @@ public class LibraryServer implements
 		}
 	}
 
-	private void updateStudentReservedBooks(String userName, String bookName,
-			String authorName) throws LibraryException {
+	private void updateStudentReservedBooks(String userName, String bookName,String authorName) throws LibraryException {
 		Character key = new Character(userName.toUpperCase().charAt(0));
 		StudentAccount acct = accountssyn(key, userName);
-		if (acct != null) {
-			acct.getReservedBooks().put(bookName + "_" + authorName,
-					new Book(bookName, authorName, new Date()));
+		if (acct != null) {acct.getReservedBooks().put(bookName + "_" + authorName,new Book(bookName, authorName, new Date()));
 			synchronizedPutAccounts(key, acct);
-			FileOps.appendToFile(
-					acct.getLogFile(),
-					new StringBuilder(
-							userName
-									+ ": reserveBook : Successfully reserved the book from interlibrary transfer with name "
-									+ bookName + " by Authour : " + authorName
-									+ " for "
-									+ Configuration.DEFAULT_NO_OF_DAYS
-									+ " days.."));
+			FileOps.appendToFile(acct.getLogFile(),new StringBuilder(userName+ ": reserveBook : Successfully reserved the book from interlibrary transfer with name "+ bookName + " by Authour : " + authorName+ " for "+ Configuration.DEFAULT_NO_OF_DAYS+ " days.."));
 		}
 	}
 
-	
 	private boolean wrapperForInterLibraryCommunication(String bookName,
 			String authorName, int serverPort) {
 		String content = communicateWithOtherLibrariesUDP(bookName, authorName,
@@ -427,13 +325,13 @@ public class LibraryServer implements
 	private boolean processResponse(String content) {
 		boolean retVal = false;
 		if (StringUtils.isNotBlank(content)) {
-			int i = 0;
+			int val = 0;
 			try {
-				i = Integer.parseInt(content);
+				val = Integer.parseInt(content);
 			} catch (Exception e) {
 
 			}
-			if (i == 1)
+			if (val == 1)
 				retVal = true;
 		}
 		return retVal;
@@ -571,7 +469,7 @@ public class LibraryServer implements
 								.getNumberOfCopies()));
 			}
 		} else {
-			throw new LibraryException("Book cannot be empty..");
+			throw new LibraryException("There should be some books");
 		}
 	}
 	public String getName() {
@@ -624,13 +522,11 @@ public class LibraryServer implements
 				String timestamp = arry[0];
 				String request = arry[1];
 				String hostname = arry[2];
-				//TODO: change port to SEQUENCER_RECV_PORT as shown below in all the implementation.. 
 				int port = Configuration.SEQUENCER_RECV_PORT;
 				String response = timestamp + Configuration.UDP_DELIMITER + this.replicaName+Configuration.UDP_DELIMITER
 						+ Configuration.SUCCESS_STRING;
 				String failureResponse = timestamp + Configuration.UDP_DELIMITER + this.replicaName+ Configuration.UDP_DELIMITER
 						+ Configuration.FAILURE_STRING;
-				//TODO: replicate the same in all the servers
 				int i = 1;
 				if (request.contains(Configuration.CREATE_ACCOUNT)) {
 					String requestParam[] = request
