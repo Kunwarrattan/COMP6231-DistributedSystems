@@ -88,28 +88,23 @@ public class ServerFunction extends CommunicationFacilitator
 	//String k = in.next().trim();
 	String k="y";
 	if(k.equalsIgnoreCase("y")){
-			if(this.servername.equalsIgnoreCase("concordia")){
-				BookSetupFunction("c", "kunwar", 10);
-				BookSetupFunction("c++", "kunwar", 10);
-				BookSetupFunction("java", "kunwar", 10);
-				BookSetupFunction("hindi", "kunwar", 10);
-				BookSetupFunction("punjabi", "kunwar", 10);
+			if(this.servername.equalsIgnoreCase(Configuration.LIBRARY1)){
+				BookSetupFunction("Cuda", "Nicholas", 2);
+				BookSetupFunction("Opencl", "Munshi", 3);
+				BookSetupFunction("3D Math", "Fletcher", 1);
+//				BookSetupFunction("hindi", "kunwar", 10);
+//				BookSetupFunction("punjabi", "kunwar", 10);
 			}
-			else if(this.servername.equalsIgnoreCase("mcgill")){
-				BookSetupFunction("algorithm", "kunwar", 10);
-				BookSetupFunction("c#", "kunwar", 10);
-				BookSetupFunction("SPM", "kunwar", 10);
-				BookSetupFunction("SCM", "kunwar", 10);
+			else if(this.servername.equalsIgnoreCase(Configuration.LIBRARY1)){
+				BookSetupFunction("Cuda", "Nicholas", 2);
+				BookSetupFunction("Opencl", "Munshi", 3);
+				BookSetupFunction("3D Math", "Fletcher", 1);
+//				BookSetupFunction("SCM", "kunwar", 10);
 			}
-			else if(this.servername.equalsIgnoreCase("vanier")){
-				BookSetupFunction("Quality", "rattan", 10);
-				BookSetupFunction("c", "rattan", 10);
-				BookSetupFunction("c++", "rattan", 10);
-				BookSetupFunction("SCM", "rattan", 10);
-				BookSetupFunction("Quality", "rattan", 10);
-				BookSetupFunction("maya", "rattan", 10);
-				BookSetupFunction("distributed", "rattan", 10);
-				BookSetupFunction("bones", "kathy", 1);
+			else if(this.servername.equalsIgnoreCase(Configuration.LIBRARY1)){
+				BookSetupFunction("Cuda", "Nicholas",5);
+				BookSetupFunction("Opencl", "Munshi", 10);
+				BookSetupFunction("3D Math", "Fletcher", 11);
 			}
 		}
 		return;
@@ -442,7 +437,7 @@ public class ServerFunction extends CommunicationFacilitator
 							}
 							else if(portNumber != 1000 && udp.initiateConnectionWithOtherServers(1000, dataToSendToLibraries)){
 								updateBookHistory(username,bookname,authorname);
-								logtask.WriteLog("Book " + bookname +"  was registered in concordia library   from " + servername + " username : "+username + "at " + cal.getTime());
+								logtask.WriteLog("Book " + bookname +"  was registered in "+ this.servername +" library   from " + servername + " username : "+username + "at " + cal.getTime());
 								//return "Book " + bookname +"  was registered in concordia library   from " + servername + " username : "+username + "at " + cal.getTime();
 								return "issued Book";
 							}
