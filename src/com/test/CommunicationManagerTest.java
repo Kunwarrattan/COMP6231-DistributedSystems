@@ -19,10 +19,12 @@ public class CommunicationManagerTest {
 		mgr.send("kaushik", InetAddress.getByName(InetAddress.getLocalHost().getCanonicalHostName()).getHostName(), 7000);
 	}*/
 	public static void main(String args[]) throws IOException, CommunicationException{
-		Server server = new Server();
+		System.out.println(InetAddress.getLocalHost().getCanonicalHostName());
+		System.out.println(InetAddress.getByName(Configuration.REPLICA_IP2));
+		/*Server server = new Server();
 		System.out.println(InetAddress.getLocalHost().getCanonicalHostName());
 		CommunicationManager mgr = new CommunicationManager(Configuration.MULTICAST_PORT,Configuration.SENDER_ROLE,server);
-		mgr.sendMulticast("kaushik is badass!!");
+		mgr.sendMulticast("kaushik is badass!!");*/
 		
 	}
 }

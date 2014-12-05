@@ -390,8 +390,8 @@ public class Sequencer extends CommunicationFacilitator implements Runnable {
 		} else if (name.equals(Configuration.SEND_REQ_TO_RM)) {
 			while (stopServer) {
 				activeReplicas = listTotActiveReplicas();
-//				System.out.println("Sequencer : Replica count refreshed .."
-//						+ activeReplicas);
+				System.out.println("Sequencer : Replica count refreshed .."
+						+ activeReplicas);
 				try {
 					Thread.currentThread().sleep(Configuration.RECV_TIMEOUT);
 				} catch (InterruptedException e) {
