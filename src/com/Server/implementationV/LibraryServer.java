@@ -1,7 +1,5 @@
 package com.Server.implementationV;
 
-
-
 import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -38,7 +36,7 @@ import com.assignment1.utils.PortClass;
  */
 
 public class LibraryServer extends CommunicationFacilitator implements
-LibraryManagementInterfaceOperations, Runnable {
+		LibraryManagementInterfaceOperations, Runnable {
 	private HashMap<String, Book> bookMap = null;
 	private HashMap<Character, HashMap<String, StudentAccount>> outhaccount = null;
 	private String uname;
@@ -55,23 +53,24 @@ LibraryManagementInterfaceOperations, Runnable {
 	/**
 	 * Start
 	 */
-	
+
 	private CommunicationManager mgrone;
 	public volatile boolean stopServer = true;
 	int receivingPort;
 	int sendingPort;
-//	public LibraryServer(){
-//		try {
-//			mgrone = new CommunicationManager(receivingPort, this);
-//		} catch (SocketException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
+
+	// public LibraryServer(){
+	// try {
+	// mgrone = new CommunicationManager(receivingPort, this);
+	// } catch (SocketException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
 	/**
 	 * End
 	 */
-	
+
 	/**
 	 * 
 	 * @param name
@@ -80,26 +79,23 @@ LibraryManagementInterfaceOperations, Runnable {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	//public LibraryServer(String name, 
-			//int interlibPort) throws Exception {
+	// public LibraryServer(String name,
+	// int interlibPort) throws Exception {
 	public LibraryServer(String name, int portForGetNonReturners,
 			int interlibPort, String replicaName) throws Exception {
-		
+
 		super(name);
-		System.out.println("Library Server Started" + name + " Replica = " + replicaName + "Port" + portForGetNonReturners);
+		System.out.println("Library Server Started" + name + " Replica = "
+				+ replicaName + "Port" + portForGetNonReturners);
 		this.uname = name;
 		this.replicaName = replicaName;
 		// this.portForGetNonReturners = portForGetNonReturners;
 		this.portForInterLibraryCommunication = interlibPort;
 		FileOps.initServer(name);
-		String bookInfoFile = "//" + name + "//"
-				+ "bookDetails.ser";
-		String acctInfoFile = "//" + name + "//"
-				+ "studentAccount.ser";
-		logFile = "//" + name + "//"
-				+ "log.txt";
-		fileofAdmin = "//" + name + "//"
-				+ "Admin.txt";
+		String bookInfoFile = "//" + name + "//" + "bookDetails.ser";
+		String acctInfoFile = "//" + name + "//" + "studentAccount.ser";
+		logFile = "//" + name + "//" + "log.txt";
+		fileofAdmin = "//" + name + "//" + "Admin.txt";
 		File file1 = new File(bookInfoFile);
 		File file2 = new File(acctInfoFile);
 		if (file1.exists()) {
@@ -120,8 +116,7 @@ LibraryManagementInterfaceOperations, Runnable {
 			FileOps.serializeObjToFile(acctInfoFile, outhaccount);
 		}
 		if (outhaccount.size() == 0) {
-			String temp = "//" + name + "//"
-					+ Configuration.USER_DIR;
+			String temp = "//" + name + "//" + Configuration.USER_DIR;
 			FileUtils.deleteQuietly(new File(temp));
 			FileUtils.forceMkdir(new File(temp));
 		}
@@ -133,24 +128,23 @@ LibraryManagementInterfaceOperations, Runnable {
 		while (iter.hasNext()) {
 			usersCopy.putAll(iter.next());
 		}
-		//Port class instead of UDPManager
+		// Port class instead of UDPManager
 		portclass = new PortClass(this, true);
-		mgrone = new CommunicationManager(Configuration.MULTICAST_PORT, Configuration.RECIEVER_ROLE,
-				this);
-		/*
-		 * thread = new Thread(this); thread.start();
-		 */}
+		mgrone = new CommunicationManager(Configuration.MULTICAST_PORT,
+				Configuration.RECIEVER_ROLE, this);
+
+		new Thread(this).start();
+	}
 
 	/**
 	 * Add the default set of keys to accounts map..
 	 */
-	
 
 	private void populateKeysForAccounts() {
 		// TODO Auto-generated method stub
 		Character ch = new Character('A');
 		for (int i = 0; i < 26; i++) {
-			outhaccount.put(Character.valueOf((char)(ch+i)),
+			outhaccount.put(Character.valueOf((char) (ch + i)),
 					new HashMap<String, StudentAccount>());
 		}
 	}
@@ -160,6 +154,7 @@ LibraryManagementInterfaceOperations, Runnable {
 			return usersCopy;
 		}
 	}
+
 	/**
 	 * This method is called from the client, to safely shut down the system.
 	 * This method persists all the necessary data structures to the file
@@ -242,8 +237,8 @@ LibraryManagementInterfaceOperations, Runnable {
 	}
 
 	/**
-	 * Synchronized setter to put the StudentAccount into the {@link #outhaccount}
-	 * map
+	 * Synchronized setter to put the StudentAccount into the
+	 * {@link #outhaccount} map
 	 * 
 	 * @param key
 	 * @param acct
@@ -265,7 +260,6 @@ LibraryManagementInterfaceOperations, Runnable {
 		}
 	}
 
-	
 	public void createAccount(String firstName, String lastName,
 			String emailAddress, String phoneNumber, String userName,
 			String password, String institutionName) throws LibraryException {
@@ -278,35 +272,50 @@ LibraryManagementInterfaceOperations, Runnable {
 			FileOps.appendToFile(logFile, new StringBuilder(userName
 					+ ": createAccount : All the parameters are mandatory..."));
 			throw new LibraryException("All the parameters are mandatory...");
-			//return "All the parameters are mandatory...";
+			// return "All the parameters are mandatory...";
 
 		}
 		if (!institutionName.equals(uname)) {
 			FileOps.appendToFile(logFile, new StringBuilder(userName
 					+ ":Institution name cannot be different.."));
 			throw new LibraryException("Institution name cannot be different..");
-			//return "Institution name cannot be different..";
+			// return "Institution name cannot be different..";
 		}
-		if (!(userName.length() >= 6 && userName
-				.length() <= 15)
-				|| !(password.length() >= 6 && password
-						.length() <= 15)) {
-			FileOps.appendToFile(logFile,new StringBuilder(userName+ ": createAccount :Username and password should be within 6 and 15 characters.."));
-			throw new LibraryException("Username and password should be within 6 and 15 characters..");
-			//return "Username and password should be within 6 and 15 characters..";
+		if (!(userName.length() >= 6 && userName.length() <= 15)
+				|| !(password.length() >= 6 && password.length() <= 15)) {
+			FileOps.appendToFile(
+					logFile,
+					new StringBuilder(
+							userName
+									+ ": createAccount :Username and password should be within 6 and 15 characters.."));
+			throw new LibraryException(
+					"Username and password should be within 6 and 15 characters..");
+			// return
+			// "Username and password should be within 6 and 15 characters..";
 		}
 		if (!phoneNumber.matches(Configuration.PHONE_REGEX_PTTRN)) {
-			FileOps.appendToFile(logFile,new StringBuilder(userName+ ": createAccount : Phone number doesn't match the pattern given.."));
-			throw new LibraryException("Phone number doesn't match the pattern given..");
-			//return "Phone number doesn't match the pattern given..";
+			FileOps.appendToFile(
+					logFile,
+					new StringBuilder(
+							userName
+									+ ": createAccount : Phone number doesn't match the pattern given.."));
+			throw new LibraryException(
+					"Phone number doesn't match the pattern given..");
+			// return "Phone number doesn't match the pattern given..";
 		}
 		if (!emailAddress.matches(Configuration.EMAIL_PATTERN)) {
-			FileOps.appendToFile(logFile,new StringBuilder(userName+ ": createAccount : Given Email doesnt match the given pattern.."));
-			throw new LibraryException("Given Email doesnt match the given pattern..");
-			//return "Given Email doesnt match the given pattern..";
+			FileOps.appendToFile(
+					logFile,
+					new StringBuilder(
+							userName
+									+ ": createAccount : Given Email doesnt match the given pattern.."));
+			throw new LibraryException(
+					"Given Email doesnt match the given pattern..");
+			// return "Given Email doesnt match the given pattern..";
 		}
-		FileOps.appendToFile(logFile, new StringBuilder(userName+ ":All Validations passed.."));
-		
+		FileOps.appendToFile(logFile, new StringBuilder(userName
+				+ ":All Validations passed.."));
+
 		Character key = new Character(userName.toUpperCase().charAt(0));
 		StudentAccount studAcct = synchronizedGetAccounts(key, userName);
 		boolean alreadyExists = true;
@@ -314,7 +323,11 @@ LibraryManagementInterfaceOperations, Runnable {
 			alreadyExists = false;
 			studAcct = new StudentAccount(firstName, lastName, emailAddress,
 					phoneNumber, userName, password, institutionName);
-			FileOps.appendToFile(logFile,new StringBuilder(userName+ ":The account doesn't exist and hence creating new account.."));
+			FileOps.appendToFile(
+					logFile,
+					new StringBuilder(
+							userName
+									+ ":The account doesn't exist and hence creating new account.."));
 		} else {
 			if (studAcct.getPassword().equals(password)) {
 				studAcct.setFirstName(firstName);
@@ -324,23 +337,29 @@ LibraryManagementInterfaceOperations, Runnable {
 				studAcct.setPhNo(phoneNumber);
 				FileOps.appendToFile(
 						logFile,
-						new StringBuilder(userName+ ":The account exist and hence updating the account information.."));
+						new StringBuilder(
+								userName
+										+ ":The account exist and hence updating the account information.."));
 			} else {
-				FileOps.appendToFile(logFile, new StringBuilder(userName+ ": createAccount : User Credentials doesnt match.."));
+				FileOps.appendToFile(logFile, new StringBuilder(userName
+						+ ": createAccount : User Credentials doesnt match.."));
 				throw new LibraryException("User Credentials doesnt match..");
-				//return "User Credentials doesnt match..";
+				// return "User Credentials doesnt match..";
 			}
 		}
 		synchronizedPutAccounts(key, studAcct);
-		FileOps.appendToFile(logFile, new StringBuilder(userName+ ": createAccount : Account successfully created.."));
+		FileOps.appendToFile(logFile, new StringBuilder(userName
+				+ ": createAccount : Account successfully created.."));
 		if (!alreadyExists)
 			FileOps.appendToFile(
 					studAcct.getLogFile(),
-					new StringBuilder(userName+ ": createAccount : Account successfully created.."));
+					new StringBuilder(
+							userName
+									+ ": createAccount : Account successfully created.."));
 		else
 			FileOps.appendToFile(studAcct.getLogFile(), new StringBuilder(
 					userName + ": createAccount : Account updated.."));
-		//return "All the parameters are mandatory...";
+		// return "All the parameters are mandatory...";
 	}
 
 	public Book reserveBookCore(String bookName, String authorName,
@@ -349,8 +368,9 @@ LibraryManagementInterfaceOperations, Runnable {
 		if (book == null) {
 			FileOps.appendToFile(logFile, new StringBuilder(userName
 					+ ":The book is not present in this library.."));
-			throw new LibraryException(Configuration.BOOK_NOT_FOUND,"The book is not present in this library..");
-			
+			throw new LibraryException(Configuration.BOOK_NOT_FOUND,
+					"The book is not present in this library..");
+
 		} else {
 			int noOfCopies = book.getNumberOfCopies();
 			if (noOfCopies > 0) {
@@ -361,7 +381,8 @@ LibraryManagementInterfaceOperations, Runnable {
 						+ ": reserveBook :Book : " + book.getName()
 						+ " by Author : " + book.getAuthor()
 						+ " is not available currently"));
-				throw new LibraryException(Configuration.BOOK_NOT_FOUND,"The book is not available currently..");
+				throw new LibraryException(Configuration.BOOK_NOT_FOUND,
+						"The book is not available currently..");
 			}
 		}
 		return book;
@@ -499,9 +520,10 @@ LibraryManagementInterfaceOperations, Runnable {
 	}
 
 	public void reserveInterLibrary(String userName, String password,
-			String bookName, String authorName, String inst) throws LibraryException {
+			String bookName, String authorName, String inst)
+			throws LibraryException {
 		try {
-			reserveBook(userName, password, bookName, authorName,inst);
+			reserveBook(userName, password, bookName, authorName, inst);
 		} catch (LibraryException exp) {
 			if (exp.code == Configuration.BOOK_NOT_FOUND) {
 				if (portForInterLibraryCommunication != Configuration.UDP_PORT_1
@@ -527,7 +549,6 @@ LibraryManagementInterfaceOperations, Runnable {
 		}
 	}
 
-	
 	private void updateStudentReservedBooks(String userName, String bookName,
 			String authorName) throws LibraryException {
 		Character key = new Character(userName.toUpperCase().charAt(0));
@@ -541,9 +562,8 @@ LibraryManagementInterfaceOperations, Runnable {
 					new StringBuilder(
 							userName
 									+ ": reserveBook : Successfully reserved the book from interlibrary transfer with name "
-									+ bookName
-									+ " by Authour : "
-									+ authorName + " for "
+									+ bookName + " by Authour : " + authorName
+									+ " for "
 									+ Configuration.DEFAULT_NO_OF_DAYS
 									+ " days.."));
 		}
@@ -556,7 +576,6 @@ LibraryManagementInterfaceOperations, Runnable {
 		return processResponse(content);
 	}
 
-	
 	private boolean processResponse(String content) {
 		boolean retVal = false;
 		if (StringUtils.isNotBlank(content)) {
@@ -615,7 +634,6 @@ LibraryManagementInterfaceOperations, Runnable {
 		return false;
 	}
 
-	
 	public void setDuration(String userName, String bookName, int numOfDays)
 			throws Exception {
 		StudentAccount acct = synchronizedGetAccounts(userName.toUpperCase()
@@ -639,28 +657,30 @@ LibraryManagementInterfaceOperations, Runnable {
 		}
 	}
 
-//	public static void main(String[] args) throws Exception {
-//		try {
-//
-//			LibraryServer server1 = new LibraryServer(Configuration.LIBRARY1,0,
-//					 Configuration.UDP_PORT_1);
-//			LibraryServer server2 = new LibraryServer(Configuration.LIBRARY2,0,
-//					 Configuration.UDP_PORT_2);
-//			LibraryServer server3 = new LibraryServer(Configuration.LIBRARY3,0,
-//					 Configuration.UDP_PORT_3);
-//			server1.setDuration("venkateshsr", "3D Math", Configuration.DEFAULT_NO_OF_DAYS+4);
-//			server1.setDuration("charlie", "3D Math", Configuration.DEFAULT_NO_OF_DAYS+6);
-//			server1.loadBooks();
-//			server2.loadBooks();
-//			server3.loadBooks();
-//			Endpoint.publish(Configuration.HOSTNAME+server1.uname, server1);
-//			Endpoint.publish(Configuration.HOSTNAME+server2.uname, server2);
-//			Endpoint.publish(Configuration.HOSTNAME+server3.uname, server3);
-//			
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
+	// public static void main(String[] args) throws Exception {
+	// try {
+	//
+	// LibraryServer server1 = new LibraryServer(Configuration.LIBRARY1,0,
+	// Configuration.UDP_PORT_1);
+	// LibraryServer server2 = new LibraryServer(Configuration.LIBRARY2,0,
+	// Configuration.UDP_PORT_2);
+	// LibraryServer server3 = new LibraryServer(Configuration.LIBRARY3,0,
+	// Configuration.UDP_PORT_3);
+	// server1.setDuration("venkateshsr", "3D Math",
+	// Configuration.DEFAULT_NO_OF_DAYS+4);
+	// server1.setDuration("charlie", "3D Math",
+	// Configuration.DEFAULT_NO_OF_DAYS+6);
+	// server1.loadBooks();
+	// server2.loadBooks();
+	// server3.loadBooks();
+	// Endpoint.publish(Configuration.HOSTNAME+server1.uname, server1);
+	// Endpoint.publish(Configuration.HOSTNAME+server2.uname, server2);
+	// Endpoint.publish(Configuration.HOSTNAME+server3.uname, server3);
+	//
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	// }
 
 	/**
 	 * used to populate data in the server instances...
@@ -733,7 +753,6 @@ LibraryManagementInterfaceOperations, Runnable {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		while (stopServer) {
 			String data = this.popFirstVal();
 			if (data != null) {
@@ -742,10 +761,13 @@ LibraryManagementInterfaceOperations, Runnable {
 				String timestamp = arry[0];
 				String request = arry[1];
 				String hostname = arry[2];
-				int port = Integer.parseInt(arry[3]);
-				String response = timestamp + Configuration.UDP_DELIMITER + this.replicaName+Configuration.UDP_DELIMITER
+				int port = Configuration.SEQUENCER_RECV_PORT;
+				String response = timestamp + Configuration.UDP_DELIMITER
+						+ this.replicaName + Configuration.UDP_DELIMITER
 						+ Configuration.SUCCESS_STRING;
-				String failureResponse = timestamp + Configuration.UDP_DELIMITER + this.replicaName+ Configuration.UDP_DELIMITER
+				String failureResponse = timestamp
+						+ Configuration.UDP_DELIMITER + this.replicaName
+						+ Configuration.UDP_DELIMITER
 						+ Configuration.FAILURE_STRING;
 				if (request.contains(Configuration.CREATE_ACCOUNT)) {
 					String requestParam[] = request
@@ -766,10 +788,11 @@ LibraryManagementInterfaceOperations, Runnable {
 					int i = 0;
 					try {
 						reserveBook(requestParam[i++], requestParam[i++],
-								requestParam[i++], requestParam[i++],requestParam[i++]);
+								requestParam[i++], requestParam[i++],
+								requestParam[i++]);
 
 					} catch (LibraryException e) {
-						response =failureResponse;
+						response = failureResponse;
 					}
 				} else if (request
 						.contains(Configuration.RESERVE_INTER_LIBRARY)) {
@@ -779,7 +802,7 @@ LibraryManagementInterfaceOperations, Runnable {
 					try {
 						reserveInterLibrary(requestParam[i++],
 								requestParam[i++], requestParam[i++],
-								requestParam[i++],requestParam[i++]);
+								requestParam[i++], requestParam[i++]);
 					} catch (LibraryException e) {
 						response = failureResponse;
 					}
@@ -808,4 +831,3 @@ LibraryManagementInterfaceOperations, Runnable {
 		// mgrone.exit();
 	}
 }
-

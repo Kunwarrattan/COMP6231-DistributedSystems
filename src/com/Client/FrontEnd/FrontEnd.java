@@ -1,7 +1,6 @@
 package com.Client.FrontEnd;
 
 import java.io.File;
-import java.net.SocketException;
 
 
 import org.apache.commons.io.FileUtils;
@@ -14,9 +13,7 @@ import com.assignment1.config.Configuration;
 
 public class FrontEnd {
 	
-	public FrontEnd() throws SocketException{
 		
-	}
 	
 	public static void main(String[] args) {
 		

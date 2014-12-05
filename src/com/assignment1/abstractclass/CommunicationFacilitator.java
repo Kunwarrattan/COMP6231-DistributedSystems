@@ -39,4 +39,9 @@ public class CommunicationFacilitator extends SequenceGenerator{
 			return null;
 		}
 	}
+	public String popValForAGivenKey(String key){
+		synchronized (sortedQueue) {
+			return sortedQueue.get(key);
+		}
+	}
 }

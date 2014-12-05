@@ -60,9 +60,6 @@ public class Configuration {
 	public static final String MULTICAST_ADDR = "224.0.1.20";
 	public static final int MULTICAST_PORT = 64;
 	public static final int SEQUENCER_RECV_PORT = 6000;
-	public static final int RECIEVING_PORT1 = 7000;
-	public static final int RECIEVING_PORT2 = 7001;
-	public static final int RECIEVING_PORT3 = 7002;
 	public static final String CREATE_ACCOUNT = "CREATE_ACCT";
 	public static final String RESERVE_BOOK = "RESERVE_BOOK";
 	public static final String RESERVE_INTER_LIBRARY = "RESERVE_INTER_LIB";
@@ -84,20 +81,16 @@ public class Configuration {
 	public static final String REPLICA_HEARTBEAT = "MY_HEARTBEAT";
 	public static final String HEART_BEAT_MONITOR = "HEART_BEAT_MONITOR";
 	public static final String RCV_MONITOR = "RCV_MONITOR";
-	public static final int UDP_FRONTEND_PORT_IMP = 0;
-	public static final String UDP_DELIMITER_SEQ = "";
-	public static final String SEQUENCER_IP = "";
-	public static final int UDP_PORT_IMP_1 = 0;
-	public static final int UDP_PORT_IMP_2 = 0;
-	public static final int UDP_PORT_IMP_3 = 0;
-	
-	public static final int FRONTEND_RM_UDP_PORT = 0;
-	public static final String  FRONTEND_IP= "";
-	
-	public static final int DEAMON_RM_UDP_PORT = 0;
+	public static final int UDP_FRONTEND_PORT_IMP = 8000;
+	public static final String UDP_DELIMITER_SEQ = ",";
+	public static final String SEQUENCER_IP = "localhost";
+	public static final String  FRONTEND_IP= "localhost";
 	public static final String  DEAMON_RM_IP= "localhost";
 	public static final String ERROR_IN_OUTPUT_STRING = "ERROR"; 
 	public static final String LIST_ACTIVE_REPLICA = "LIST_REPLICA";
 	public static final String REPLICA_COUNT_STR = "REPLICA_COUNT";
+	public static final String FRONT_END_IOR_FILE = "FRONT_END";
+	public static final String SEND_REQ_TO_RM = "SEND_THREAD";
+	
 	
 }

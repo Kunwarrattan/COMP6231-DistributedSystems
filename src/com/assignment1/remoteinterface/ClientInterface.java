@@ -1,7 +1,6 @@
 package com.assignment1.remoteinterface;
 
 import java.io.IOException;
-//import java.net.SocketException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -48,6 +47,9 @@ public class ClientInterface extends CommunicationFacilitator implements
 					Configuration.REPLICA1);
 			//TODO:	replicate it in all the other implementation
 			instancesNotRunning = false;
+			ReplicaManager mgr = new ReplicaManager();
+			//FrontEnd f = new FrontEnd();
+			//Sequencer seq = new Sequencer();
 		}
 		if (name.equals(Configuration.REPLICA2)) {
 			mgrone = new CommunicationManager(
@@ -100,7 +102,6 @@ public class ClientInterface extends CommunicationFacilitator implements
 		new ClientInterface(Configuration.REPLICA1);
 		new ClientInterface(Configuration.REPLICA2);
 		new ClientInterface(Configuration.REPLICA3);
-		new ReplicaManager();
 
 	}
 
@@ -112,25 +113,25 @@ public class ClientInterface extends CommunicationFacilitator implements
 		if (this.name.equals(Configuration.REPLICA1) && !instancesNotRunning) {
 			expected = Configuration.REPLICA_HEARTBEAT
 					+ Configuration.UDP_DELIMITER + Configuration.REPLICA1;
-			System.out.println("Sending notification for "  +  Configuration.REPLICA1);
+//			System.out.println("Sending notification for "  +  Configuration.REPLICA1);
 			mgrone.send(expected, Configuration.DEAMON_RM_IP,
 					Configuration.RM_RECV_PORT);
 
 		} else if (this.name.equals(Configuration.REPLICA2) && !instancesNotRunning) {
 			expected = Configuration.REPLICA_HEARTBEAT
 					+ Configuration.UDP_DELIMITER + Configuration.REPLICA2;
-			System.out.println("Sending notification for "  +  Configuration.REPLICA2);
+//			System.out.println("Sending notification for "  +  Configuration.REPLICA2);
 			mgrone.send(expected, Configuration.DEAMON_RM_IP,
 					Configuration.RM_RECV_PORT);
 
 		} else if (this.name.equals(Configuration.REPLICA3) && !instancesNotRunning) {
 			expected = Configuration.REPLICA_HEARTBEAT
 					+ Configuration.UDP_DELIMITER + Configuration.REPLICA3;
-			System.out.println("Sending notification for "  +  Configuration.REPLICA3);
+//			System.out.println("Sending notification for "  +  Configuration.REPLICA3);
 			mgrone.send(expected, Configuration.DEAMON_RM_IP,
 					Configuration.RM_RECV_PORT);
 		}
-		System.out.println("ClientInterface : Notification : "+expected);
+//		System.out.println("ClientInterface : Notification : "+expected);
 		Thread.currentThread().sleep(
 				Configuration.MAX_DURATION_TO_WAIT_BEFORE_TIMEOUT * 500);
 	}
@@ -142,6 +143,12 @@ public class ClientInterface extends CommunicationFacilitator implements
 			while (stopServer) {
 				try {
 					sendNotificaton();
+					try {
+						Thread.currentThread().sleep(10);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
 				} catch (CommunicationException | IOException
 						| InterruptedException | ExecutionException
@@ -260,7 +267,7 @@ public class ClientInterface extends CommunicationFacilitator implements
 										Configuration.LIBRARY3, 0,
 										Configuration.K_UDP_PORT_3,
 										Configuration.REPLICA2);
-
+								instancesNotRunning = false;
 							} else if (name.equals(Configuration.REPLICA3)) {
 								if (concordia != null) {
 									System.out.println("ClientInterface : server" +concordia+"restarting ");
@@ -284,6 +291,7 @@ public class ClientInterface extends CommunicationFacilitator implements
 										Configuration.LIBRARY3, 0,
 										Configuration.V_UDP_PORT_3,
 										Configuration.REPLICA3);
+								instancesNotRunning = false;
 							}
 
 						}
@@ -291,6 +299,12 @@ public class ClientInterface extends CommunicationFacilitator implements
 				}
 
 				catch (Exception e) {
+					e.printStackTrace();
+				}
+				try {
+					Thread.currentThread().sleep(10);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

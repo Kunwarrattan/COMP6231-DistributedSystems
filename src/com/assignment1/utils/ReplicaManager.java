@@ -40,6 +40,9 @@ public class ReplicaManager extends CommunicationFacilitator implements
 					+ Configuration.REPLICA_COUNT_STR
 					+ Configuration.UDP_DELIMITER + activeReplicas.size(),
 					hostName, clientPort);
+			System.out.println("ReplicaManager : listActiveReplicas() :"+ timestamp + Configuration.UDP_DELIMITER
+					+ Configuration.REPLICA_COUNT_STR
+					+ Configuration.UDP_DELIMITER + activeReplicas.size());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -48,7 +51,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 
 	public void handleFailure(String replica) {
 		try {
-			System.out.println("ReplicaManager : handleFailure() : start.");
+//			System.out.println("ReplicaManager : handleFailure() : start.");
 			synchronized (failureTracker) {
 				Integer i = failureTracker.get(replica);
 				if (i != null) {
@@ -64,7 +67,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("ReplicaManager : handleFailure() : end.");
+//		System.out.println("ReplicaManager : handleFailure() : end.");
 	}
 
 	private void startReplica(String dataRecieved)
@@ -79,7 +82,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 	private void startReplicaCore(String replicaName)
 			throws CommunicationException, IOException, InterruptedException,
 			ExecutionException, TimeoutException {
-		System.out.println("ReplicaManager : startReplicaCore() : "+replicaName);
+//		System.out.println("ReplicaManager : startReplicaCore() : "+replicaName);
 		String data = Configuration.REPLICA_START_CMD;
 		if (Configuration.REPLICA1.equals(replicaName)) {
 			mgr.send(data, Configuration.REPLICA_IP1,
@@ -98,13 +101,13 @@ public class ReplicaManager extends CommunicationFacilitator implements
 			addReplicaToSet(Configuration.REPLICA3);
 			resetReplicaFailureTrackerVal(Configuration.REPLICA3);
 		}
-		System.out.println("ReplicaManager : startReplicaCore() : end. " + replicaName);
+//		System.out.println("ReplicaManager : startReplicaCore() : end. " + replicaName);
 	}
 
 	private void killReplicaCore(String replicaName)
 			throws CommunicationException, IOException, InterruptedException,
 			ExecutionException, TimeoutException {
-		System.out.println("ReplicaManager : killReplicaCore() : "+replicaName);
+//		System.out.println("ReplicaManager : killReplicaCore() : "+replicaName);
 		String data = Configuration.REPLICA_SHUT_DOWN_CMD;
 		if (activeReplicas.contains(replicaName)
 				&& Configuration.REPLICA1.equals(replicaName)) {
@@ -112,6 +115,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 					Configuration.REPLICA_INTERFACE_PORT1);
 			removeReplicaFromSet(Configuration.REPLICA1);
 			removeReplicaFromFailureTracker(Configuration.REPLICA1);
+			//TODO should be removed..
 			removeReplicaFromNotificationTracker(Configuration.REPLICA1);
 		} else if (activeReplicas.contains(replicaName)
 				&& Configuration.REPLICA2.equals(replicaName)) {
@@ -128,7 +132,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 			removeReplicaFromFailureTracker(Configuration.REPLICA3);
 			removeReplicaFromNotificationTracker(Configuration.REPLICA3);
 		}
-		System.out.println("ReplicaManager : killReplicaCore() : end "+replicaName);
+//		System.out.println("ReplicaManager : killReplicaCore() : end "+replicaName);
 	}
 
 	private void killReplica(String dataRecieved)
@@ -144,7 +148,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 		// expected string Configuration.REPLICA_HEARTBEAT +
 		// Configuration.UDP_DELIMITER + Configuration.REPLICA1 ;
 		String ary[] = notification.split(Configuration.UDP_DELIMITER);
-		System.out.println("ReplicaManager : recieveNotificationFromReplica() : start ");
+//		System.out.println("ReplicaManager : recieveNotificationFromReplica() : start ");
 		synchronized (numberOfTimesReplicaHeartBeatMissed) {
 			Integer i = numberOfTimesReplicaHeartBeatMissed.get(ary[1]);
 			if (i == null) {
@@ -165,7 +169,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 	private void incrementNotifcationNotRecievedCount()
 			throws CommunicationException, IOException, InterruptedException,
 			ExecutionException, TimeoutException {
-		System.out.println("ReplicaManager : incrementNotifcationNotRecievedCount() : start ");
+//		System.out.println("ReplicaManager : incrementNotifcationNotRecievedCount() : start ");
 		synchronized (numberOfTimesReplicaHeartBeatMissed) {
 			for (Map.Entry<String, Integer> entry : numberOfTimesReplicaHeartBeatMissed
 					.entrySet()) {
@@ -179,7 +183,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 				numberOfTimesReplicaHeartBeatMissed.put(entry.getKey(), i);
 			}
 		}
-		System.out.println("ReplicaManager : incrementNotifcationNotRecievedCount() : end ");
+//		System.out.println("ReplicaManager : incrementNotifcationNotRecievedCount() : end ");
 		Thread.currentThread().sleep(
 				Configuration.MAX_DURATION_TO_WAIT_BEFORE_TIMEOUT * 2000);
 	}
@@ -217,7 +221,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 	@Override
 	public void run() {
 		String name = Thread.currentThread().getName();
-		System.out.println("Replica Manager is running for" + name);
+//		System.out.println("Replica Manager is running for" + name);
 		if (name.equals(Configuration.HEART_BEAT_MONITOR)) {
 			while (stopServer) {
 				try {
@@ -227,12 +231,19 @@ public class ReplicaManager extends CommunicationFacilitator implements
 						| TimeoutException e) {
 					e.printStackTrace();
 				}
+				try {
+					Thread.currentThread().sleep(10);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		} else if (name.equals(Configuration.RCV_MONITOR)) {
 			while (stopServer) {
 				String data = this.popFirstVal();
 				try {
 					if (data != null) {
+						//System.out.println("Request : ReplicaMgr : "+data);
 						String[] arry;
 						arry = data
 								.split(Configuration.COMMUNICATION_SEPERATOR);
@@ -258,6 +269,12 @@ public class ReplicaManager extends CommunicationFacilitator implements
 						}
 					}
 				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				try {
+					Thread.currentThread().sleep(10);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

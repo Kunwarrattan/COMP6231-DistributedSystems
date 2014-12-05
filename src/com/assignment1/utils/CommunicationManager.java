@@ -53,12 +53,14 @@ public class CommunicationManager extends Thread {
 			multicastSender = new MulticastSocket(multicastPort);
 		} else {
 			multicastReciever = new MulticastSocket(multicastPort);
+			multicastReciever.setSoTimeout(Configuration.RECV_TIMEOUT);
 			multicastReciever.joinGroup(InetAddress
 					.getByName(Configuration.MULTICAST_ADDR));
 		}
 		this.receivingPort = receivingPort;
 		this.facilitator = facilitator;
 		init();
+		this.start();
 	}
 
 	public CommunicationManager(int multicastPort, String role,CommunicationFacilitator facilitator)
@@ -69,8 +71,11 @@ public class CommunicationManager extends Thread {
 			multicastReciever = new MulticastSocket(multicastPort);
 			multicastReciever.joinGroup(InetAddress
 					.getByName(Configuration.MULTICAST_ADDR));
+			multicastReciever.setSoTimeout(Configuration.RECV_TIMEOUT);
 		}
 		this.facilitator = facilitator;
+		sendingSocket = new DatagramSocket();
+		sendingSocket.setSoTimeout(Configuration.RECV_TIMEOUT);
 		this.start();
 	}
 
@@ -88,7 +93,7 @@ public class CommunicationManager extends Thread {
 		if (multicastReciever != null) {
 			multicastReciever.close();
 		}
-		System.out.println("CommunicationMGR : Exiting..");
+		//System.out.println("CommunicationMGR : Exiting..");
 	}
 
 	public synchronized String send(String data, String hostName, int clientPort)
@@ -112,7 +117,7 @@ public class CommunicationManager extends Thread {
 			}
 			byte[] finalBuffer = finalData.getBytes();
 			d = finalData;
-			System.out.println("CommunicationMgr : send() : data :"+finalData);
+			//System.out.println("CommunicationMgr : send() : data :"+finalData);
 			DatagramPacket sendPacket = new DatagramPacket(finalBuffer,
 					finalBuffer.length, InetAddress.getByName(hostName),
 					clientPort);
@@ -176,7 +181,7 @@ public class CommunicationManager extends Thread {
 						}
 
 					} catch (SocketTimeoutException e) {
-						System.out.println("Sender timed out..");
+						//System.out.println("Sender timed out..");
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -187,7 +192,7 @@ public class CommunicationManager extends Thread {
 						TimeUnit.SECONDS);
 
 			} catch (TimeoutException e) {
-				System.out.println("Restarting..");
+				//System.out.println("Restarting..");
 			}
 			future.cancel(true);
 			service.shutdownNow();
@@ -196,7 +201,7 @@ public class CommunicationManager extends Thread {
 		}
 		if (result) {
 		//	System.out.println("Successfully sent,.");
-			System.out.println("CommunicationMgr : send() : data :"+d +" : SENT SUCCESS");
+			//System.out.println("CommunicationMgr : send() : data :"+d +" : SENT SUCCESS");
 			return timeStamp;
 		}
 		if (i >= Configuration.MAX_NO_OF_TRIES) {
@@ -269,7 +274,7 @@ public class CommunicationManager extends Thread {
 				}
 			}
 			catch (SocketException e) {
-				System.out.println("Closed..");
+				//System.out.println("Closed..");
 			}
 			catch (IOException e) {
 				e.printStackTrace();
@@ -278,9 +283,15 @@ public class CommunicationManager extends Thread {
 				String resp[] = result
 						.split(Configuration.COMMUNICATION_SEPERATOR);
 				facilitator.pushToQueue(resp[0], result);
-				System.out.println("CommunicationMGR: recv() : Request Recieved : "+result);
+				//System.out.println("CommunicationMGR: recv() : Request Recieved : "+result);
 				result = null;
 				//System.out.println("Successfully recieved,.");
+			}
+			try {
+				Thread.currentThread().sleep(5);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
 		}
@@ -337,6 +348,7 @@ public class CommunicationManager extends Thread {
 					"String size cannot be greater than "
 							+ Configuration.MAX_PACKET_SIZE);
 		}
+		
 		byte[] finalBuffer = finalData.getBytes();
 		System.out.println("CommunicationMGR : sendMulticast : "+finalData);
 		DatagramPacket sendPacket = new DatagramPacket(finalBuffer,
@@ -350,6 +362,7 @@ public class CommunicationManager extends Thread {
 	private void multicastRecv() throws IOException {
 		try{
 		while (stopServer) {
+			try{
 			byte[] buf = new byte[Configuration.MAX_PACKET_SIZE];
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);
 			multicastReciever.receive(packet);
@@ -363,13 +376,21 @@ public class CommunicationManager extends Thread {
 						+ packet.getAddress().getHostName()
 						+ Configuration.COMMUNICATION_SEPERATOR
 						+ Configuration.SEQUENCER_RECV_PORT;
-				System.out.println("CommunicationMGR : multicastRecv : "+dataToQueue);
+			System.out.println("CommunicationMGR : multicastRecv : "+dataToQueue);
 				facilitator.pushToQueue(resp[0], dataToQueue);
+			}
+				Thread.currentThread().sleep(5);
+			}
+			catch(InterruptedException e){
+				e.printStackTrace();
+			}
+			catch(SocketTimeoutException w){
+				
 			}
 		}
 		}
 		catch(SocketException e){
-			System.out.println("Closed..");
+		//	System.out.println("Closed..");
 		}
 		
 	}

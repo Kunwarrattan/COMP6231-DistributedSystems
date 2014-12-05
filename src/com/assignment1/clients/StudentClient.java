@@ -124,13 +124,13 @@ public class StudentClient {
 	 */
 	public void createAccountUsingMultipleThreads() {
 		int i = 0;
-		while (i < 5) {
+		while (i < 1) {
 			System.out.println("Create Account.");
-			final String firstName = "test";
-			final String lastName = "test";
+			final String firstName = "kaushik";
+			final String lastName = "sivaprasad";
 			final String emailAddress = "test@gmail.com";
 			final String phoneNumber = "514-111-1111";
-			final String userName = "abcdefg1";
+			final String userName = "kaushik";
 			final String password = "123456";
 			final String institutionName = Configuration.LIBRARY1;
 			System.out.println("Creating threads.. ");
@@ -175,7 +175,7 @@ public class StudentClient {
 		org.omg.CORBA.Object obj = null;
 		try {
 			obj = orb.string_to_object(FileUtils.readFileToString(new File(
-					".//" + serverName + "IOR.txt")));
+					".//" + Configuration.FRONT_END_IOR_FILE + "IOR.txt")));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

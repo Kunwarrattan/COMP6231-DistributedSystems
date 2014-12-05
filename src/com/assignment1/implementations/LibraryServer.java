@@ -802,7 +802,6 @@ public class LibraryServer implements
 	// CODE
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		while (stopServer) {
 			String data = this.facilitator.popFirstVal();
 			if (data != null) {
@@ -817,10 +816,11 @@ public class LibraryServer implements
 						+ Configuration.SUCCESS_STRING;
 				String failureResponse = timestamp + Configuration.UDP_DELIMITER + this.replicaName+ Configuration.UDP_DELIMITER
 						+ Configuration.FAILURE_STRING;
+				//TODO: replicate the same in all the servers
+				int i = 1;
 				if (request.contains(Configuration.CREATE_ACCOUNT)) {
 					String requestParam[] = request
 							.split(Configuration.UDP_DELIMITER);
-					int i = 0;
 					try {
 						createAccount(requestParam[i++], requestParam[i++],
 								requestParam[i++], requestParam[i++],
@@ -833,7 +833,6 @@ public class LibraryServer implements
 				} else if (request.contains(Configuration.RESERVE_BOOK)) {
 					String requestParam[] = request
 							.split(Configuration.UDP_DELIMITER);
-					int i = 0;
 					try {
 						reserveBook(requestParam[i++], requestParam[i++],
 								requestParam[i++], requestParam[i++],requestParam[i++]);
@@ -845,7 +844,6 @@ public class LibraryServer implements
 						.contains(Configuration.RESERVE_INTER_LIBRARY)) {
 					String requestParam[] = request
 							.split(Configuration.UDP_DELIMITER);
-					int i = 0;
 					try {
 						reserveInterLibrary(requestParam[i++],
 								requestParam[i++], requestParam[i++],
@@ -856,7 +854,6 @@ public class LibraryServer implements
 				} else if (request.contains(Configuration.GET_NON_RETUNERS)) {
 					String requestParam[] = request
 							.split(Configuration.UDP_DELIMITER);
-					int i = 0;
 					try {
 						response += Configuration.UDP_DELIMITER
 								+ getNonRetuners(requestParam[i++],
@@ -873,6 +870,12 @@ public class LibraryServer implements
 						| TimeoutException e) {
 					e.printStackTrace();
 				}
+			}
+			try {
+				Thread.currentThread().sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		// mgrone.exit();
