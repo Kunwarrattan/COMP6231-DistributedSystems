@@ -56,6 +56,7 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 			System.out.println("FrontEnd : createAccount ?: timestamp "
 					+ timeStamp);
 			String responseSet = getResponseSet(timeStamp);
+			System.out.println("FrontEnd : set : "+responseSet);
 			HashMap<String, Boolean> responseMap = new HashMap<String, Boolean>();
 			if (responseSet == null) {
 				throw new LibraryException("Timed out..");
@@ -67,6 +68,7 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 					responseMap.put(replyArry[0],
 							Boolean.parseBoolean(replyArry[1]));
 				}
+				System.out.println(responseMap);
 			}
 			if (responseMap.size() != 1) {
 				if (responseMap.get(Configuration.REPLICA1) != null
@@ -74,6 +76,7 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 								responseMap.get(Configuration.REPLICA2))) {
 					if (responseMap.get(Configuration.REPLICA1).equals(
 							responseMap.get(Configuration.REPLICA3))) {
+						
 						return;
 					} else {
 						String flag = Configuration.ERROR_IN_OUTPUT_STRING
@@ -82,6 +85,12 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 						System.out
 								.println("FrontEnd : createAccount : Failure detected in "
 										+ Configuration.REPLICA3);
+						if(responseMap.get(Configuration.REPLICA3) != null &&  responseMap.get(Configuration.REPLICA3)){
+							throw new LibraryException("The intented operation was not successfull");
+						}
+						else if(responseMap.get(Configuration.REPLICA3) == null && !responseMap.get(Configuration.REPLICA1)){
+							throw new LibraryException("The intented operation was not successfull");
+						}
 						MGR.send(flag, Configuration.DEAMON_RM_IP,
 								Configuration.RM_RECV_PORT);
 					}
@@ -94,6 +103,12 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 					System.out
 							.println("FrontEnd : createAccount : Failure detected in "
 									+ Configuration.REPLICA2);
+					if(responseMap.get(Configuration.REPLICA2) != null && responseMap.get(Configuration.REPLICA2)){
+						throw new LibraryException("The intented operation was not successfull");
+					}
+					else if(responseMap.get(Configuration.REPLICA2) == null && !responseMap.get(Configuration.REPLICA1)){
+						throw new LibraryException("The intented operation was not successfull");
+					}
 					MGR.send(flag, Configuration.DEAMON_RM_IP,
 							Configuration.RM_RECV_PORT);
 				} else if (responseMap.get(Configuration.REPLICA2) != null
@@ -105,6 +120,9 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 					System.out
 							.println("FrontEnd : createAccount : Failure detected in "
 									+ Configuration.REPLICA1);
+					if(responseMap.get(Configuration.REPLICA1)){
+						throw new LibraryException("The intented operation was not successfull");
+					}
 					MGR.send(flag, Configuration.DEAMON_RM_IP,
 							Configuration.RM_RECV_PORT);
 				}
@@ -147,7 +165,7 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 							Boolean.parseBoolean(replyArry[1]));
 				}
 			}
-
+			System.out.println(responseMap);
 			if (responseMap.size() != 1) {
 				if (responseMap.get(Configuration.REPLICA1) != null
 						&& responseMap.get(Configuration.REPLICA1).equals(
@@ -162,6 +180,12 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 						System.out
 								.println("FrontEnd : reserveBook : Failure detected in "
 										+ Configuration.REPLICA3);
+						if(responseMap.get(Configuration.REPLICA3) != null &&  responseMap.get(Configuration.REPLICA3)){
+							throw new LibraryException("The intented operation was not successfull");
+						}
+						else if(responseMap.get(Configuration.REPLICA3) == null && !responseMap.get(Configuration.REPLICA1)){
+							throw new LibraryException("The intented operation was not successfull");
+						}
 						MGR.send(flag, Configuration.DEAMON_RM_IP,
 								Configuration.RM_RECV_PORT);
 					}
@@ -174,6 +198,12 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 					System.out
 							.println("FrontEnd : reserveBook : Failure detected in "
 									+ Configuration.REPLICA2);
+					if(responseMap.get(Configuration.REPLICA2) != null && responseMap.get(Configuration.REPLICA2)){
+						throw new LibraryException("The intented operation was not successfull");
+					}
+					else if(responseMap.get(Configuration.REPLICA2) == null && !responseMap.get(Configuration.REPLICA1)){
+						throw new LibraryException("The intented operation was not successfull");
+					}
 					MGR.send(flag, Configuration.DEAMON_RM_IP,
 							Configuration.RM_RECV_PORT);
 				} else if (responseMap.get(Configuration.REPLICA2) != null
@@ -185,6 +215,9 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 					System.out
 							.println("FrontEnd : reserveBook : Failure detected in "
 									+ Configuration.REPLICA1);
+					if(responseMap.get(Configuration.REPLICA1)){
+						throw new LibraryException("The intented operation was not successfull");
+					}
 					MGR.send(flag, Configuration.DEAMON_RM_IP,
 							Configuration.RM_RECV_PORT);
 				}
@@ -233,7 +266,7 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 							Boolean.parseBoolean(replyArry[1]));
 				}
 			}
-
+			System.out.println(responseMap);
 			if (responseMap.size() != 1) {
 				if (responseMap.get(Configuration.REPLICA1) != null
 						&& responseMap.get(Configuration.REPLICA1).equals(
@@ -248,6 +281,13 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 						System.out
 								.println("FrontEnd : reserveInterLibrary : Failure detected in "
 										+ Configuration.REPLICA3);
+						
+						if(responseMap.get(Configuration.REPLICA3) != null &&  responseMap.get(Configuration.REPLICA3)){
+							throw new LibraryException("The intented operation was not successfull");
+						}
+						else if(responseMap.get(Configuration.REPLICA3) == null && !responseMap.get(Configuration.REPLICA1)){
+							throw new LibraryException("The intented operation was not successfull");
+						}
 						MGR.send(flag, Configuration.DEAMON_RM_IP,
 								Configuration.RM_RECV_PORT);
 					}
@@ -260,6 +300,13 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 					System.out
 							.println("FrontEnd : reserveInterLibrary : Failure detected in "
 									+ Configuration.REPLICA2);
+					
+					if(responseMap.get(Configuration.REPLICA2) != null && responseMap.get(Configuration.REPLICA2)){
+						throw new LibraryException("The intented operation was not successfull");
+					}
+					else if(responseMap.get(Configuration.REPLICA2) == null && !responseMap.get(Configuration.REPLICA1)){
+						throw new LibraryException("The intented operation was not successfull");
+					}
 					MGR.send(flag, Configuration.DEAMON_RM_IP,
 							Configuration.RM_RECV_PORT);
 				} else if (responseMap.get(Configuration.REPLICA2) != null
@@ -271,6 +318,13 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 					System.out
 							.println("FrontEnd : reserveInterLibrary : Failure detected in "
 									+ Configuration.REPLICA1);
+					
+					if(responseMap.get(Configuration.REPLICA1) != null && responseMap.get(Configuration.REPLICA1)){
+						throw new LibraryException("The intented operation was not successfull");
+					}
+					else if(responseMap.get(Configuration.REPLICA1) == null && !responseMap.get(Configuration.REPLICA2)){
+						throw new LibraryException("The intented operation was not successfull");
+					}
 					MGR.send(flag, Configuration.DEAMON_RM_IP,
 							Configuration.RM_RECV_PORT);
 				}
@@ -311,6 +365,7 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 					responseMap.put(replyArry[0], replyArry[1]);
 				}
 			}
+			System.out.println(responseMap);
 			if (responseMap.size() != 1) {
 				if (responseMap.get(Configuration.REPLICA1) != null
 						&& responseMap.get(Configuration.REPLICA1).equals(
@@ -381,7 +436,7 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 		for (int i = 0; i < Configuration.MAX_NO_OF_TRIES; i++) {
 			synchronized (monitor) {
 				try {
-					monitor.wait(Configuration.MAX_DURATION_TO_WAIT_BEFORE_TIMEOUT * 300);
+					monitor.wait(Configuration.MAX_DURATION_TO_WAIT_BEFORE_TIMEOUT * 400);
 					synchronized (responseMap) {
 						String responseFromReplica = responseMap.get(timeStamp);
 						if (responseFromReplica != null || i == 4) {
@@ -410,7 +465,7 @@ public class FrontEndUDP extends LibraryManagementInterfacePOA implements
 				response = "";
 				for (int i = 1; i < responseArry.length; i++) {
 					response += responseArry[i];
-					if (i == responseArry.length - 1) {
+					if (i != responseArry.length - 1) {
 						response += Configuration.UDP_DELIMITER;
 					}
 				}

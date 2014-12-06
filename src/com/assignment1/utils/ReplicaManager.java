@@ -51,7 +51,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 
 	public void handleFailure(String replica) {
 		try {
-//			System.out.println("ReplicaManager : handleFailure() : start.");
+			System.out.println("ReplicaManager : handleFailure() : start.");
 			synchronized (failureTracker) {
 				Integer i = failureTracker.get(replica);
 				if (i != null) {
@@ -67,7 +67,7 @@ public class ReplicaManager extends CommunicationFacilitator implements
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//		System.out.println("ReplicaManager : handleFailure() : end.");
+		System.out.println("ReplicaManager : handleFailure() : end.");
 	}
 
 	private void startReplica(String dataRecieved)

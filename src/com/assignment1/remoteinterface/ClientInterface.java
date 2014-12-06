@@ -100,9 +100,9 @@ public class ClientInterface extends CommunicationFacilitator implements
 	public static void main(String[] args) throws Exception {
 	
 		new ClientInterface(Configuration.REPLICA1);
-		new ClientInterface(Configuration.REPLICA2);
+		//new ClientInterface(Configuration.REPLICA2);
 		//ReplicaManager mgr = new ReplicaManager();
-		new ClientInterface(Configuration.REPLICA3);
+		//new ClientInterface(Configuration.REPLICA3);
 
 	}
 

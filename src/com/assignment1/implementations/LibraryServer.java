@@ -864,6 +864,7 @@ public class LibraryServer implements
 					}
 				}
 				try {
+					System.out.println("Response : "+response+" Hostname : "+hostname+"Port : " +port);
 					mgrone.send(response, hostname, port);
 				} catch (CommunicationException | IOException
 						| InterruptedException | ExecutionException

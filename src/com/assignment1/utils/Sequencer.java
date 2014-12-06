@@ -53,6 +53,7 @@ public class Sequencer extends CommunicationFacilitator implements Runnable {
 			} else {
 				String response = "";
 				int i = 0;
+				System.out.println(responseSet);
 				for (String reply : responseSet) {
 					String replyArry[] = reply
 							.split(Configuration.UDP_DELIMITER);
@@ -206,7 +207,7 @@ public class Sequencer extends CommunicationFacilitator implements Runnable {
 		for (int i = 0; i < Configuration.MAX_NO_OF_TRIES; i++) {
 			synchronized (monitor) {
 				try {
-					monitor.wait(Configuration.MAX_DURATION_TO_WAIT_BEFORE_TIMEOUT * 300);
+					monitor.wait(Configuration.MAX_DURATION_TO_WAIT_BEFORE_TIMEOUT * 400);
 //					System.out
 //							.println("Sequencer : getResponseSet() : Waking up..");
 					synchronized (responseMap) {
